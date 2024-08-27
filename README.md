@@ -28,15 +28,15 @@ a CNN model for classification chemical images into one of the four predefined c
 
 
 The package consists of three main components:
-### A) Implementation of Creating of Convolutional Neural Network (CNN) model for Image Classification (`chemic_train_eval.py`):
+### A) Implementation of Creating of Convolutional Neural Network (CNN) model for Image Classification ([chemic_train_eval.py](chemic_train_eval.py)):
 - Responsible for training a deep learning model to classify images into four predefined classes.
 - Uses a pre-trained ResNet-50 model and includes data preparation, model training, evaluation, and testing steps.
 
-### B) Web Service for Chemical Image Classification (`chemic/app.py`):
+### B) Web Service for Chemical Image Classification ([app.py](chemic/app.py)):
 - Provides a Flask web application for classifying chemical images using the trained ResNet-50 model.
 - Exposes an endpoint /classify_image for accepting chemical images and returning the predicted class.
 
-### C) Image Classification Client (`client.py`):
+### C) Image Classification Client ([client.py](chemic/client.py)):
 - Interact with the ChemIC web-server. The client can send to server:
   - the path to a individual image file
   - the path to directory with several images
@@ -63,14 +63,13 @@ conda create --name chemic "python<3.12"
 conda activate chemic
 
 # 2. Install ChemIC-ml
-
 # 2.1 from PyPi
 pip install ChemIC-ml
 
 # 2.2 Or get and install package from GitHub repository
 pip install git+https://github.com/ontochem/ChemIC.git
 
-# 2.3 Or install in the editable mode
+# 2.3 Or install in the editable mode from GitHub repository
 git clone https://github.com/ontochem/ChemIC.git
 cd ChemIC
 pip install -r requirements.txt
@@ -80,14 +79,18 @@ pip install -e .
  
 ## Model construction
 First download the archive with manually labeled images as a part of Supplementary materials from Zenodo [dataset_for_image_classifier.zip](https://zenodo.org/records/13378718).
-Unzip the archive with images. To perform model training, validation, and test steps as well as saving your own trained model run:
+Unzip the archive with images. 
 ```bash
-python chemic_train_eval.py
+unzip dataset_for_image_classifier.zip
 ```
-Note, that the python script should be run in the directory where the unzipped folder `dataset_for_image_classifier` is located.
+To perform model training, validation, and test steps as well as saving your own trained model run in CLI:
+```bash
+python chemic_train_eval.py --dataset_dir /path/to/data --checkpoint_path /path/to/checkpoint.pth --models_dir /path/to/models
+```
+This will execute the training and evaluation using the specified paths.
 
 ## Models download
-Download pretrained models from Zenodo as archive [models.zip](https://doi.org/10.5281/zenodo.10709886) and unzip it to the directory `chemic/models`.
+Download already pretrained models from Zenodo as archive [models.zip](https://doi.org/10.5281/zenodo.10709886) and unzip it to the directory `chemic/models`.
 The directory `models` should contain the pretrained model `chemical_image_classifier_resnet50.pth` for chemical image classification.
 
 ## Usage Web Service for Chemical Image Classification
