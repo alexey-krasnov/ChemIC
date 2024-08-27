@@ -14,3 +14,4 @@ dataset_for_image_classifier.zip
 back_pyproject.toml
 *.egg-info
 /ChemIC.egg-info/
+/dataset_for_image_classifier/

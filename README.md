@@ -14,10 +14,12 @@
 - [Usage Web Service for Chemical Image Classification](#usage-web-service-for-chemical-image-classification)
 - [Jupyter Notebook](#jupyter-notebook)
 - [Author](#author)
+- [Citation](#citation)
+- [References](#references)
 - [License](#license)
 
 ## Project Description
-The Chemical Image Classifier (ChemIC) program is for training and using
+The Chemical Image Classifier (ChemIC) project can be suitable for training and using
 a CNN model for classification chemical images into one of the four predefined classes:
 1. images with single chemical structure;
 2. images with chemical reactions; 
@@ -26,7 +28,7 @@ a CNN model for classification chemical images into one of the four predefined c
 
 
 The package consists of three main components:
-### A) Implementation of Image Classification with Convolutional Neural Network (CNN) (`chemic_train_eval.py`):
+### A) Implementation of Creating of Convolutional Neural Network (CNN) model for Image Classification (`chemic_train_eval.py`):
 - Responsible for training a deep learning model to classify images into four predefined classes.
 - Uses a pre-trained ResNet-50 model and includes data preparation, model training, evaluation, and testing steps.
 
@@ -56,17 +58,19 @@ The package consists of three main components:
 
 ## Prepare Workspace Environment with Conda
 ```bash
-# Create and activate conda environment
+# 1. Create and activate conda environment
 conda create --name chemic "python<3.12"
 conda activate chemic
 
-# Install from PyPi
+# 2. Install ChemIC-ml
+
+# 2.1 from PyPi
 pip install ChemIC-ml
 
-# Or get and install package from Github repository
+# 2.2 Or get and install package from GitHub repository
 pip install git+https://github.com/ontochem/ChemIC.git
 
-# Or install in the editable mode
+# 2.3 Or install in the editable mode
 git clone https://github.com/ontochem/ChemIC.git
 cd ChemIC
 pip install -r requirements.txt
@@ -75,20 +79,20 @@ pip install -e .
 - Where -e means "editable" mode.
  
 ## Model construction
-Download the archive `dataset_for_image_classifier.zip` as a part of Supplementary materials from [Zenodo](https://zenodo.org/records/10546827) .
-To perform model training, validation, and test steps as well as save your own trained model run:
+First download the archive with manually labeled images as a part of Supplementary materials from Zenodo [dataset_for_image_classifier.zip](https://zenodo.org/records/13378718).
+Unzip the archive with images. To perform model training, validation, and test steps as well as saving your own trained model run:
 ```bash
 python chemic_train_eval.py
 ```
-Note, that the program should be run in the directory where the folder `dataset_for_image_classifier` is located.
+Note, that the python script should be run in the directory where the unzipped folder `dataset_for_image_classifier` is located.
 
-## Models
-Download pretrained models from Zenodo as archive [models.zip](https://doi.org/10.5281/zenodo.10709886) and unzip its content to the directory `chemic/models`.
+## Models download
+Download pretrained models from Zenodo as archive [models.zip](https://doi.org/10.5281/zenodo.10709886) and unzip it to the directory `chemic/models`.
 The directory `models` should contain the pretrained model `chemical_image_classifier_resnet50.pth` for chemical image classification.
 
 ## Usage Web Service for Chemical Image Classification
 
-### 1. Start the Flask web server in production mode
+### 1. Start the Flask web server in a production mode
 Run in command line from the directory ChemIC:
 ```bash
 gunicorn -w 1 -b 127.0.0.1:5000 --timeout 3600 chemic.app:app
@@ -100,7 +104,7 @@ gunicorn -w 1 -b 127.0.0.1:5000 --timeout 3600 chemic.app:app
 - --timeout 3600: Sets the maximum allowed request processing time in seconds.
   Adjust this value based on your application's needs.
 
-## 2. Classify Image with client.py module
+## 2. Classify Image with client.py module in CLI
 ```bash
  python chemic/client.py --image_path /path/to/images --export_dir /path/to/export
 ```
@@ -112,7 +116,7 @@ OR
 - **--image_data** is the base64 encoded image data.
 - **--export_dir** is the export directory for the results.
 
-## 3. Or use client for classification in your code
+## 3. Or use client for classification in your Python code
 ```python
 from chemic.client import ChemClassifierClient
 
@@ -146,14 +150,18 @@ print(recognition_results)
 The `client_image_classifier.ipynb` Jupyter notebook in folder `notebooks` provides an easy-to-use interface for classifying images.
 Follow the outlined steps to perform image classification.
 
-## Author:
+## Author
 Dr. Aleksei Krasnov
 a.krasnov@digital-science.com
 OntoChem GmbH part of Digital Science
 
-## Citation:
+## Citation
 - A. Krasnov, S. Barnabas, T. Böhme, S. Boyer, L. Weber, Comparing software tools for optical chemical structure recognition, Digital Discovery (2024).	https://doi.org/10.1039/D3DD00228D
 - L. Weber, A. Krasnov, S. Barnabas, T. Böhme, S. Boyer, Comparing Optical Chemical Structure Recognition Tools, ChemRxiv. (2023). https://doi.org/10.26434/chemrxiv-2023-d6kmg-v2
 
-## License:
+## References
+- A. Krasnov, Images dataset for Chemical Images Classifier model. https://zenodo.org/records/13378718
+- A. Krasnov, Chemical Image Classifier Model. https://zenodo.org/records/10709886
+
+## License
 This project is licensed under the MIT - see the LICENSE.md file for details.

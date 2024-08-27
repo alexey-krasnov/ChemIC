@@ -1,5 +1,11 @@
 from setuptools import setup, find_packages
 
+def read_requirements():
+    """Read the requirements.txt file and return a list of dependencies."""
+    with open("requirements.txt", "r", encoding="utf-8") as fh:
+        return fh.read().splitlines()
+
+
 # Read the contents of README.md
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -25,16 +31,5 @@ setup(
     url="https://github.com/ontochem/ChemIC.git",
     packages=find_packages(exclude=["tests", "tests.*", "models", "Benchmark"]),
     package_dir={'chemic': 'chemic'},
-    install_requires=[
-        "flask>=3.0.0",
-        "gunicorn>=21.2.0",
-        "numpy>=1.26.3",
-        "pandas>=2.2.0",
-        "pillow>=10.2.0",
-        "requests>=2.31.0",
-        "scikit-learn>=1.3.2",
-        "torch>=2.2.0",
-        "torchmetrics>=1.2.1",
-        "torchvision>=0.17.0",
-    ],
+    install_requires=read_requirements(),
 )

@@ -1,4 +1,4 @@
-"""Train a deep learning model to classify chemical images into one of four predefined classes:
+"""Train a deep learning model to use it for classification chemical images into one of four predefined classes:
 - images with single chemical structure
 - images with chemical reactions
 - images multiple chemical structures
@@ -30,11 +30,11 @@ from torchvision.transforms import v2
 def main():
     start = time.time()
     # Constants
-    num_epochs = 100  # Set a large number of epochs
-    early_stopping_patience = 20  # Number of consecutive epochs with no improvement to wait before stopping
-    batch_size = 32
-    num_classes = 4
-    model_name = "resnet50"  # define the models name
+    NUM_EPOCHS = 100  # Set a large number of epochs
+    EARLY_STOPPING_PATIENCE = 20  # Number of consecutive epochs with no improvement to wait before stopping
+    BATCH_SIZE = 32
+    NUM_CLASSES = 4 # Number of classes for classification - one_molecule, reactions, several_molecules, rest
+    MODEL_NAME = "resnet50"  # define the models name
     # Move model and data to GPU if available
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     print(f'Device: {device}')
@@ -66,9 +66,9 @@ def main():
     val_dataset = ImageFolder(root=f'{data_dir}/validation', transform=transform)
 
     n_cpu = os.cpu_count()
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=n_cpu)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=n_cpu)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=n_cpu)
+    train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=n_cpu)
+    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=n_cpu)
+    val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=n_cpu)
 
     # Define the models
     try:
@@ -78,7 +78,7 @@ def main():
 
         # Reinitialize the model with the modified architecture
         model = models.resnet50(pretrained=False)
-        model.fc = nn.Linear(model.fc.in_features, num_classes)  # Adjust to output 4 classes
+        model.fc = nn.Linear(model.fc.in_features, NUM_CLASSES)  # Adjust to output 4 classes
 
         # Load the weights from the checkpoint
         model.load_state_dict(checkpoint)
@@ -87,7 +87,7 @@ def main():
         print('Use pretrained models from Pytorch...')
         # If we haven't trained models, load pretrained from pytorch
         model = models.resnet50(pretrained=True)
-        model.fc = nn.Linear(model.fc.in_features, num_classes)  # Adjust to output 4 classes
+        model.fc = nn.Linear(model.fc.in_features, NUM_CLASSES)  # Adjust to output 4 classes
     model.to(device)
 
     # Define loss function and optimizer
@@ -108,9 +108,9 @@ def main():
 
     # Training loop
     # Create and open a text file to save the training information
-    log_file_path = f'{models_dir}/chemical_image_classifier_{model_name}_augmentation_{datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}.txt'
+    log_file_path = f'{models_dir}/chemical_image_classifier_{MODEL_NAME}_augmentation_{datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}.txt'
     with open(log_file_path, 'w') as log_file:
-        for epoch in range(num_epochs + 1):
+        for epoch in range(NUM_EPOCHS + 1):
             model.train()
             running_loss = 0.0
             for inputs, labels in train_loader:
@@ -122,7 +122,7 @@ def main():
                 optimizer.step()
                 running_loss += loss.item()
 
-            print(f"Epoch [{epoch}/{num_epochs}], Loss: {running_loss / len(train_loader):.4f}", file=log_file)
+            print(f"Epoch [{epoch}/{NUM_EPOCHS}], Loss: {running_loss / len(train_loader):.4f}", file=log_file)
             # Validation loop
             model.eval()
             correct_val = 0
@@ -153,7 +153,7 @@ def main():
                 no_improvement_count += 1
 
             # Check for early stopping
-            if no_improvement_count >= early_stopping_patience:
+            if no_improvement_count >= EARLY_STOPPING_PATIENCE:
                 print(f"Early stopping at epoch {epoch} due to no improvement in validation accuracy.", file=log_file)
                 break  # Stop training
 
@@ -163,7 +163,7 @@ def main():
     # Save the best models at the latest epoch
     if best_model:
         print("Save best models...")
-        best_model_name = f'{models_dir}/chemical_image_classifier_{model_name}_{epoch}epochs_hand_drawn_like_{datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}.pth'
+        best_model_name = f'{models_dir}/chemical_image_classifier_{MODEL_NAME}_{epoch}epochs_hand_drawn_like_{datetime.now().strftime("%Y-%m-%dT%H:%M:%S")}.pth'
         torch.save(best_model, best_model_name)
 
         # Load the best models for testing
@@ -223,7 +223,7 @@ def main():
         df.sort_values(by='image_id', inplace=True)
         result_dir = f"results/{dataset_name}"
         pathlib.Path(result_dir).mkdir(parents=True, exist_ok=True)
-        DF_NAME = f"{result_dir}/predictions_{model_name}_{best_epoch}epochs_augmentation.csv"
+        DF_NAME = f"{result_dir}/predictions_{MODEL_NAME}_{best_epoch}epochs_augmentation.csv"
         # Export the DataFrame to a CSV file
         df.to_csv(DF_NAME, index=False)
         end = time.time()

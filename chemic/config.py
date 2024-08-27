@@ -32,7 +32,7 @@ class Config:
     PROCESSING_UNIT = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     @staticmethod
-    def download_and_extract_models():
+    def download_and_extract_chemic_model():
         # Download the models.zip file from Zenodo
         url = "https://zenodo.org/record/10709886/files/models.zip"
         response = requests.get(url)
@@ -47,7 +47,7 @@ class Config:
         if not Config.IMAGE_CLASSIFIER_MODEL_PATH.exists():
             # Download and extract models if not already downloaded
             print(f'Downloading models...')
-            Config.download_and_extract_models()
+            Config.download_and_extract_chemic_model()
 
         model = models.resnet50(pretrained=False)  # False if not using a pretrained model from pytorch
         num_classes = 4  # Adjust the number of classes in your model

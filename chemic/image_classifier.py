@@ -86,15 +86,15 @@ class ImageClassifier:
         """
         self.mixed_loader = None
         self.results = []  # Store results of recognition in a list
-        self.prog_flag = 'ChemIC-ml'
-        self.prog_version = self.get_package_version(self.prog_flag)
+        self.flag = 'ChemIC-ml'
+        self.version = self.get_package_version(self.flag)
 
     def send_to_classifier(self, image_path: str) -> Union[Tuple[Response, int], List]:
         """
         Enqueues images for classification based on the provided image input.
 
         Parameters:
-            - image_input (Union[str, bytes]): Path to the image file or directory, or base64-encoded image data.
+            - image_input (str): Path to the image file or directory
 
         Returns:
             - Union[Tuple[Response, int], List]: Tuple containing success message or error response if input is invalid,
@@ -113,6 +113,7 @@ class ImageClassifier:
             self.results.append(result_entry)
             return self.results
         else:
+            # Perform classification
             self.process_image_files()
             return jsonify({"message": "Images have been classified."}), 202
 
@@ -130,8 +131,8 @@ class ImageClassifier:
                 result_entry = {
                     'image_id': Path(image_path).name,
                     'predicted_label': predicted_label,
-                    'program': self.prog_flag,
-                    'program_version': self.prog_version
+                    'program': self.flag,
+                    'program_version': self.version
                 }
                 self.results.append(result_entry)
 
@@ -172,8 +173,8 @@ class ImageClassifier:
             result_entry = {
                 'image_id': None,  # TODO: should we use hash of binary object to identify it or just skip image_id?
                 'predicted_label': predicted_label,
-                'program': self.prog_flag,
-                'program_version': self.prog_version
+                'program': self.flag,
+                'program_version': self.version
             }
             print(f'Result entry {result_entry}')
             self.results.append(result_entry)
