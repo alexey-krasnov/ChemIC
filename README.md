@@ -1,4 +1,4 @@
-# Chemical Image Classifier (ChemIC) v1.2
+# Chemical Image Classifier (ChemIC) v1.3
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-blue.svg)](https://GitHub.com/ontochem/ChemIC/graphs/commit-activity)
 [![GitHub issues](https://img.shields.io/github/issues/ontochem/ChemIC.svg)](https://github.com/ontochem/ChemIC/issues)
