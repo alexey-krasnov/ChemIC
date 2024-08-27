@@ -87,6 +87,10 @@ To perform model training, validation, and test steps as well as saving your own
 ```bash
 python chemic_train_eval.py --dataset_dir /path/to/data --checkpoint_path /path/to/checkpoint.pth --models_dir /path/to/models
 ```
+- **--dataset_dir** is the directory containing the dataset (train, test, validation subdirectories).
+- **--checkpoint_path** is the path to the existing model checkpoint file.
+- **--models_dir** is the directory to save new trained models. 
+
 This will execute the training and evaluation using the specified paths.
 
 ## Models download

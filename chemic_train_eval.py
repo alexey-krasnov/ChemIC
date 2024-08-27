@@ -242,7 +242,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Train and evaluate a ResNet model for Chemical Image Classification.')
     parser.add_argument('--dataset_dir', type=str, required=True, help='Directory containing the dataset (train, test, validation subdirectories)')
-    parser.add_argument('--checkpoint_path', type=str, required=True, help='Path to the existed model checkpoint file')
+    parser.add_argument('--checkpoint_path', type=str, required=True, help='Path to the existing model checkpoint file')
     parser.add_argument('--models_dir', type=str, default='models', help='Directory to save new trained models')
 
     args = parser.parse_args()
