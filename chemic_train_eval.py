@@ -18,9 +18,9 @@ Author:
 
 import argparse
 import os
-from pathlib import Path
 import time
 from datetime import timedelta, datetime
+from pathlib import Path
 
 import pandas as pd
 import torch

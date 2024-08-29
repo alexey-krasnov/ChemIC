@@ -44,9 +44,9 @@ from flask import jsonify, Response
 from torch.utils.data import DataLoader
 from torchvision.transforms import v2
 
+from chemic.chemical_labels import chem_labels
 from chemic.config import Config
 from chemic.loading_images import MixedImagesDataset
-from chemic.chemical_labels import chem_labels
 
 # Define the transformation for the images
 transform = v2.Compose([

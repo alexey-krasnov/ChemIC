@@ -24,10 +24,11 @@ Author:
 
 """
 
-from typing import List, Dict, Optional
-from chemic.client import ChemClassifierClient
-from pathlib import Path
 import base64
+from pathlib import Path
+from typing import List, Dict, Optional
+
+from chemic.client import ChemClassifierClient
 
 server_url='http://127.0.0.1:5000'
 
