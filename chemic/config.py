@@ -13,6 +13,7 @@ Author:
 """
 
 import io
+from functools import lru_cache
 import zipfile
 from pathlib import Path
 
@@ -55,7 +56,7 @@ class Config:
         num_classes = 4  # Adjust the number of classes in your model
         model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
         model.load_state_dict(torch.load(Config.IMAGE_CLASSIFIER_MODEL_PATH))
-        print(f'Model loaded from {Config.IMAGE_CLASSIFIER_MODEL_PATH.name}')
+        print(f'Model initialized from {Config.IMAGE_CLASSIFIER_MODEL_PATH.name}')
         return model.eval()
 
     @staticmethod
