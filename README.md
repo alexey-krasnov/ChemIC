@@ -153,6 +153,14 @@ print(recognition_results)
   ...
 ]
 ```
+
+## 4. Use frontend web interface
+In another CLI run:
+```bash
+streamlit run chemic_frontendapp.py --server.address=0.0.0.0 --server.port=5005
+```
+The command will adress you on ChemIC user web interface.
+
 ## Jupyter Notebook
 The [client_image_classifier.ipynb](notebooks/client_image_classifier.ipynb) Jupyter notebook in folder `notebooks` provides an easy-to-use interface for classifying images.
 Follow the outlined steps to perform image classification.
