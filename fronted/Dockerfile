@@ -6,6 +6,6 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 COPY . /app
 
-EXPOSE 8501
+EXPOSE 5005
 
-ENTRYPOINT ["streamlit", "run", "chemic_frontendapp.py", "--server.address=0.0.0.0","--server.port=8501"]
+ENTRYPOINT ["streamlit", "run", "chemic_frontendapp.py", "--server.address=0.0.0.0","--server.port=5005"]
