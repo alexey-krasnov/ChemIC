@@ -60,7 +60,9 @@ transform = v2.Compose([
 
 # Define class labels. Order of class label in the NamedTuple is essential!
 class ChemicalLabels(NamedTuple):
-    """"Class label for image classifier"""
+    """"
+    Class label for image classifier
+    """
     single_chemical_structure: str
     chemical_reactions: str
     no_chemical_structures: str

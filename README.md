@@ -154,7 +154,7 @@ print(recognition_results)
 ]
 ```
 ## Jupyter Notebook
-The `client_image_classifier.ipynb` Jupyter notebook in folder `notebooks` provides an easy-to-use interface for classifying images.
+The [client_image_classifier.ipynb](notebooks/client_image_classifier.ipynb) Jupyter notebook in folder `notebooks` provides an easy-to-use interface for classifying images.
 Follow the outlined steps to perform image classification.
 
 ## Author

@@ -29,6 +29,8 @@ class Config:
 
     IMAGE_CLASSIFIER_MODEL_PATH = MODELS_DIR / "chemical_image_classifier_resnet50.pth"
 
+    # IMAGE_CLASSIFIER_MODEL_PATH = MODELS_DIR / "chemical_image_classifier_resnet50_29epochs_hand_drawn_like_2024-02-27T15:56:37.pth"
+
     PROCESSING_UNIT = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     @staticmethod
@@ -53,6 +55,7 @@ class Config:
         num_classes = 4  # Adjust the number of classes in your model
         model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
         model.load_state_dict(torch.load(Config.IMAGE_CLASSIFIER_MODEL_PATH))
+        print(f'Model loaded from {Config.IMAGE_CLASSIFIER_MODEL_PATH.name}')
         return model.eval()
 
     @staticmethod
