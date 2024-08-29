@@ -36,7 +36,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple, List, NamedTuple, Union
+from typing import Tuple, List, Union
 
 import torch
 from PIL import Image
@@ -46,6 +46,7 @@ from torchvision.transforms import v2
 
 from chemic.config import Config
 from chemic.loading_images import MixedImagesDataset
+from chemic.chemical_labels import chem_labels
 
 # Define the transformation for the images
 transform = v2.Compose([
@@ -56,24 +57,6 @@ transform = v2.Compose([
     v2.ToDtype(torch.float32, scale=True),  # Convert to float32 and scale to [0, 1]
     v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
-
-
-# Define class labels. Order of class label in the NamedTuple is essential!
-class ChemicalLabels(NamedTuple):
-    """"
-    Class label for image classifier
-    """
-    single_chemical_structure: str
-    chemical_reactions: str
-    no_chemical_structures: str
-    multiple_chemical_structures: str
-
-
-# Creating an instance of ChemicalLabels
-chem_labels = ChemicalLabels(single_chemical_structure='single chemical structure',
-                             chemical_reactions='chemical reactions',
-                             no_chemical_structures='no chemical structures',
-                             multiple_chemical_structures='multiple chemical structures')
 
 # Load ML models
 classifier_model = Config.get_models()
