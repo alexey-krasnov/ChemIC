@@ -1,6 +1,5 @@
 import argparse
 import datetime
-import os
 import time
 from pathlib import Path
 
@@ -47,35 +46,34 @@ class ChemClassifierClient:
         Returns:
             dict: Classification results, including image ID, predicted labels, and chemical structures.
         """
-        # try:
-        data = {}
-        if image_path:
-            # Check if the path to the file is valid
-            file_path = Path(image_path)
-            if not file_path.exists():
-                raise FileNotFoundError(f'Invalid path provided: {image_path}')
-            data['image_path'] = str(file_path)
-        elif image_data:
-            # Image data should be base64 encoded
-            data['image_data'] = image_data
-        else:
-            raise ValueError("Either --image_path or --image_data must be provided.")
+        try:
+            data = {}
+            if image_path:
+                # Check if the path to the file is valid
+                file_path = Path(image_path)
+                if not file_path.exists():
+                    raise FileNotFoundError(f'Invalid path provided: {image_path}')
+                data['image_path'] = str(file_path)
+            elif image_data:
+                # Image data should be base64 encoded
+                data['image_data'] = image_data
+            else:
+                raise ValueError("Either --image_path or --image_data must be provided.")
 
-        # Send a POST request to the server
-        response = requests.post(f'{self.server_url}/classify_image', data=data)
-        # response.raise_for_status()  # Raise an HTTPError for bad responses
+            # Send a POST request to the server
+            response = requests.post(f'{self.server_url}/classify_image', data=data)
+            # response.raise_for_status()  # Raise an HTTPError for bad responses
 
-        print(response.json())
-        # Parse the JSON response
-        return response.json()
+            print(response.json())
+            # Parse the JSON response
+            return response.json()
 
-        # except requests.exceptions.RequestException as e:
-        #     print(f"Request failed: {e}")
-        #     return {'error': str(e)}
-        # except Exception as e:
-        #     print(f"Unexpected error: {e}")
-        #     return {'error': str(e)}
-
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return {'error': str(e)}
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+            return {'error': str(e)}
 
     def healthcheck(self):
         """

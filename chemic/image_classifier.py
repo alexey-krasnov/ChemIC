@@ -29,7 +29,6 @@ Author:
     a.krasnov@digital-science.com
     Date: February 26, 2024
 """
-
 import base64
 import importlib.metadata
 import os
@@ -105,7 +104,7 @@ class ImageClassifier:
             futures = [executor.submit(self.process_image_file, image_data_) for image_data_ in self.mixed_loader]
             for future in as_completed(futures):
                 image_path, predicted_label = future.result()
-                print(image_path, predicted_label)
+                # print(image_path, predicted_label)
                 result_entry = {
                     'image_id': Path(image_path).name,
                     'predicted_label': predicted_label,
@@ -205,21 +204,3 @@ class ImageClassifier:
             _, predicted = torch.max(output.data, 1)
             predicted_label = chem_labels[predicted.item()]
             return predicted_label
-
-    @staticmethod
-    def get_package_version(package_name: str) -> str:
-        """
-        Get the version of the specified Python package.
-
-        Parameters:
-            package_name (str): The name of the Python package.
-
-        Returns:
-            str: The version of the specified package if installed.
-                 If the package is not installed, returns a message indicating that the package is not installed.
-        """
-        try:
-            package_version = importlib.metadata.version(package_name)
-            return package_version
-        except importlib.metadata.PackageNotFoundError:
-            return f"{package_name} is not installed"

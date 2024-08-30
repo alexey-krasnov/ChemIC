@@ -11,9 +11,9 @@ Author:
     a.krasnov@digital-science.com
     Date: February 26, 2024
 """
-from functools import lru_cache
 import io
 import zipfile
+from functools import lru_cache
 from pathlib import Path
 
 import requests

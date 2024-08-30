@@ -1,7 +1,9 @@
 import time
+from typing import List, Optional
+
 from fastapi import FastAPI, HTTPException, Form
 from pydantic import BaseModel
-from typing import List, Optional
+
 from chemic.image_classifier import ImageClassifier
 
 # Start time to calculate loading time
@@ -17,10 +19,6 @@ print(f"Launching took {time.strftime('%H:%M:%S', time.gmtime(end - start))}")
 
 # Creating an instance of Chemical ImageClassifier
 image_classifier = ImageClassifier()
-
-# class ClassificationRequest(BaseModel):
-#     image_path: Optional[str] = None
-#     image_data: Optional[str] = None
 
 class ClassificationResult(BaseModel):
     image_id: Optional[str]
@@ -47,9 +45,11 @@ async def classify_image(image_path: Optional[str] = Form(None), image_data: Opt
         return results
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error during classification: {str(e)}")
+
 @app.get("/healthcheck")
 async def healthcheck():
     return {"status": "Server is up and running"}
+
 
 if __name__ == "__main__":
     import uvicorn
