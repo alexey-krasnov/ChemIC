@@ -114,7 +114,7 @@ class ImageClassifier:
                 result_entry = {
                     'image_id': Path(image_path).name,
                     'predicted_label': predicted_label,
-                    'classifier': self.classifier_version,
+                    'classifier_package': self.classifier_version,
                     'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
                 }
                 self.results.append(result_entry)
@@ -156,7 +156,7 @@ class ImageClassifier:
             result_entry = {
                 'image_id': None,  # TODO: should we use hash of binary object to identify it or just skip image_id?
                 'predicted_label': predicted_label,
-                'classifier': self.classifier_version,
+                'classifier_package': self.classifier_version,
                 'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
             }
             print(f'Result entry {result_entry}')

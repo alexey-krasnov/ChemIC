@@ -131,8 +131,8 @@ def main():
                     formatted_results.append({
                         'image_id': result.get('image_id'),
                         'predicted_label': result.get('predicted_label', 'no chemical structures'),
-                        'program': result.get('program', 'ChemIC'),
-                        'program_version': result.get('program_version', '1.2')
+                        'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
+                        'classifier_model': result.get('classifier_model', 'ResNet_50')
                     })
 
                 combined_df = pd.DataFrame(formatted_results)
@@ -149,8 +149,8 @@ def main():
                 formatted_result = {
                     'image_id': result.get('image_id'),
                     'predicted_label': result.get('predicted_label', 'no chemical structures'),
-                    'program': result.get('program', 'ChemIC'),
-                    'program_version': result.get('program_version', '1.2')
+                    'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
+                    'classifier_model': result.get('classifier_model', 'ResNet_50')
                 }
 
                 result_df = pd.DataFrame([formatted_result])
