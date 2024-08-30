@@ -42,6 +42,7 @@ async def classify_image(image_path: Optional[str] = Form(None), image_data: Opt
 
         # Ensure results are returned in the correct format
         results = image_classifier.results
+        print(results)
         return results
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error during classification: {str(e)}")

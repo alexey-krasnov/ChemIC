@@ -30,7 +30,6 @@ Author:
     Date: February 26, 2024
 """
 import base64
-import importlib.metadata
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO
@@ -45,7 +44,7 @@ from torchvision.transforms import v2
 from chemic.chemical_labels import chem_labels
 from chemic.config import Config
 from chemic.loading_images import MixedImagesDataset
-from chemic.utils import get_package_name_version
+from chemic.utils import get_package_name_version, generate_unique_identifier
 
 # Define the transformation for the images
 transform = v2.Compose([
@@ -68,6 +67,7 @@ class ImageClassifier:
         self.mixed_loader = None
         self.results = []  # Store results of recognition in a list
         self.classifier_version = f"{get_package_name_version('ChemIC-ml')}"
+        self.total_number_images = 0
 
     def send_to_classifier(self, image_path: str) -> List[dict]:
         """
@@ -83,6 +83,7 @@ class ImageClassifier:
             # Create a DataLoader for the mixed images
             mixed_dataset = MixedImagesDataset(path_or_dir=image_path, transform=transform)
             self.mixed_loader = DataLoader(mixed_dataset, batch_size=1, shuffle=False, num_workers=0)
+            self.total_number_images = len(self.mixed_loader)
         except Exception as e:
             print(f"Exception: {e} {image_path}")
             result_entry = {
@@ -104,7 +105,7 @@ class ImageClassifier:
             futures = [executor.submit(self.process_image_file, image_data_) for image_data_ in self.mixed_loader]
             for future in as_completed(futures):
                 image_path, predicted_label = future.result()
-                # print(image_path, predicted_label)
+                print(image_path, predicted_label)
                 result_entry = {
                     'image_id': Path(image_path).name,
                     'predicted_label': predicted_label,
@@ -113,24 +114,26 @@ class ImageClassifier:
                 }
                 self.results.append(result_entry)
 
-    def process_image_file(self, image_data: Tuple[str, torch.Tensor]) -> Tuple[str, str]:
+    def process_image_file(self, image_data: Tuple[str, torch.Tensor]):
         """
-        Processes a single image and returns the image path and predicted class label.
+        Processes a single image in the mixed_loader and returns the image path and predicted class label by
+        using chemical images classifier.
 
         Parameters:
-        - image_data (Tuple[str, torch.Tensor]): A tuple containing the image path and the corresponding image tensor.
+        - image_data (Tuple[str, torch.Tensor]): A tuple containing the image path, and the corresponding image tensor.
 
         Returns:
         - Tuple[str, str]: A tuple containing the image path and the predicted class label.
         """
         image_path, image = image_data
-        image_path = image_path[0]  # Extract the image path from the batch
         try:
             predicted_label = self.inference_label(image=image)
-            return image_path, predicted_label
+            return image_path[0], predicted_label
         except Exception as e:
-            print(f"Error processing image {image_path}: {str(e)}")
-            return image_path, "Error"
+            # Log the error and re-raise if necessary
+            print(f"Error processing image {image_path}: {e}")
+            raise e
+
 
     def process_image_data(self, base64_data: str) -> List[dict]:
         """
@@ -142,6 +145,7 @@ class ImageClassifier:
         Returns:
             - List[dict]: List of classification results.
         """
+        image_hash_id = generate_unique_identifier(base64_encoded_image=base64_data.encode())
         # Transform the image
         transformed_image = self.transform_base64_image(base64_data, transform_type=transform)
 
@@ -149,7 +153,7 @@ class ImageClassifier:
             predicted_label = self.inference_label(image=transformed_image)
         except Exception as e:
             result_entry = {
-                'image_id': None,
+                'image_id': image_hash_id,
                 'predicted_label': f"Error: {str(e)}",
                 'classifier_package': self.classifier_version,
                 'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
@@ -158,7 +162,7 @@ class ImageClassifier:
             return self.results
         else:
             result_entry = {
-                'image_id': None,  # Consider using a hash of the image data as an ID if needed
+                'image_id': image_hash_id,  # Consider using a hash of the image data as an ID if needed
                 'predicted_label': predicted_label,
                 'classifier_package': self.classifier_version,
                 'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
@@ -189,7 +193,8 @@ class ImageClassifier:
         transformed_image = transform_type(image).unsqueeze(0)
         return transformed_image
 
-    def inference_label(self, image: torch.Tensor) -> str:
+
+    def inference_label(self, image):
         """
         Performs inference on the image and returns the predicted label.
 

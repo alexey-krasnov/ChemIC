@@ -7,9 +7,9 @@ Dependencies:
     - torch.utils.data.Dataset
 
 Usage:
-    Instantiate the MixedImagesDataset class to create a PyTorch Dataset for loading images. Specify the path to
-    a directory containing images or the path to a single image.
-    Optionally, provide a transform function to apply to each image.
+    Instantiate the MixedImagesDataset class to create a PyTorch Dataset for loading images.
+    Specify the path to a directory containing images
+    or the path to a single image. Optionally, provide a transform function to apply to each image.
 
 Example:
     dataset = MixedImagesDataset('/path/to/images', transform=transforms.ToTensor())
@@ -18,7 +18,7 @@ Example:
 Author:
     Dr. Aleksei Krasnov
     a.krasnov@digital-science.com
-    February 26, 2024
+    Date: December 4, 2023
 """
 from pathlib import Path
 
@@ -35,7 +35,7 @@ class MixedImagesDataset(Dataset):
         - path_or_dir (str or Path): Path to a directory containing images or a path to a single image.
         - transform (callable, optional): A function/transform to apply to each image.
         """
-        self.path_or_dir = Path(path_or_dir)
+        self.path_or_dir = Path(path_or_dir) if isinstance(path_or_dir, str) else path_or_dir
         self.transform = transform
         self.image_paths = self.get_image_paths()
 
@@ -46,12 +46,23 @@ class MixedImagesDataset(Dataset):
         Returns:
         - List[Path]: List of image paths.
         """
-        if self.path_or_dir.is_dir():
-            return [img_path for img_path in self.path_or_dir.glob('[!.]*') if self.is_image(img_path)]
+        image_paths = []
+        if isinstance(self.path_or_dir, list):
+            for path in self.path_or_dir:
+                path = Path(path)
+                if path.is_dir():
+                    image_paths.extend([img_path for img_path in path.glob('[!.]*') if self.is_image(img_path)])
+                elif self.is_image(path):
+                    image_paths.append(path)
+                else:
+                    raise ValueError(f"Invalid path or directory provided: {path}. File is not an image")
+        elif self.path_or_dir.is_dir():
+            image_paths = [img_path for img_path in self.path_or_dir.glob('[!.]*') if self.is_image(img_path)]
         elif self.is_image(self.path_or_dir):
-            return [self.path_or_dir]
+            image_paths = [self.path_or_dir]
         else:
             raise ValueError("Invalid path or directory provided. File is not an image")
+        return image_paths
 
     def __len__(self):
         """
@@ -62,7 +73,8 @@ class MixedImagesDataset(Dataset):
         """
         return len(self.image_paths)
 
-    def is_image(self, path):
+    @staticmethod
+    def is_image(path):
         """
         Check if a file is a valid image file.
 
@@ -73,11 +85,11 @@ class MixedImagesDataset(Dataset):
         - bool: True if the file is a valid image, False otherwise.
         """
         try:
-            print(f'opening {path}')
             with Image.open(path) as img:
                 img.verify()
             return True
-        except Exception as e:
+        except (IOError, SyntaxError) as e:
+            print(f"Invalid image file: {path}. Error: {e}")
             return False
 
     def __getitem__(self, idx):
