@@ -72,8 +72,9 @@ class ImageClassifier:
         self.classifier_model = classifier_model
         self.mixed_loader = None
         self.results = []  # Store results of recognition in a list
-        self.flag = 'ChemIC-ml'
-        self.version = self.get_package_version(self.flag)
+        # self.flag = 'ChemIC-ml'
+        # self.version = self.get_package_version(self.flag)
+        self.classifier_version = f'ChemIC-ml_{self.classifier_model.__class__.__name__}_50'
 
     def send_to_classifier(self, image_path: str) -> Union[Tuple[Response, int], List]:
         """
@@ -117,8 +118,7 @@ class ImageClassifier:
                 result_entry = {
                     'image_id': Path(image_path).name,
                     'predicted_label': predicted_label,
-                    'program': self.flag,
-                    'program_version': self.version
+                    'classifier': self.classifier_version,
                 }
                 self.results.append(result_entry)
 
@@ -159,8 +159,7 @@ class ImageClassifier:
             result_entry = {
                 'image_id': None,  # TODO: should we use hash of binary object to identify it or just skip image_id?
                 'predicted_label': predicted_label,
-                'program': self.flag,
-                'program_version': self.version
+                'classifier': self.classifier_version,
             }
             print(f'Result entry {result_entry}')
             self.results.append(result_entry)
