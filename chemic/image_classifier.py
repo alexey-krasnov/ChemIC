@@ -66,9 +66,10 @@ class ImageClassifier:
     """
     A class encapsulating image classification functionality.
     """
-    def __init__(self) -> None:
+    def __init__(self, classifier_model) -> None:
         """Initializes the ImageRecognizer instance with queues.
         """
+        self.classifier_model = classifier_model
         self.mixed_loader = None
         self.results = []  # Store results of recognition in a list
         self.flag = 'ChemIC-ml'

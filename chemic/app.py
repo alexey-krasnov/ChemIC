@@ -42,22 +42,28 @@ Author:
     a.krasnov@digital-science.com
     Date: February 26, 2024
 """
-
+import time
+start = time.time()
 from flask import Flask, jsonify, request
 
 from chemic.image_classifier import ImageClassifier
+from chemic.config import Config
 
 app = Flask(__name__)
-
+end = time.time()
 print(f'ChemIC web service {__name__} is ready to work...')
+print(f"Launching took {time.strftime('%H:%M:%S', time.gmtime(end - start))}")
 
+# Load ML models
+classifier_model= Config().get_models()
+
+# Creating an instance of Chemical ImageClassifier
+image_classifier = ImageClassifier(classifier_model)
 
 @app.route('/classify_image', methods=['POST'])
 def classify_image():
     try:
-        image_classifier = ImageClassifier()
         image_classifier.results = []  # Assign an attribute as an empty list for each new classification cycle
-
         if image_path := request.form.get('image_path'):
             print(f'Server received image {image_path}')
             # Classification step
