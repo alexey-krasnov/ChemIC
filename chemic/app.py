@@ -47,18 +47,14 @@ start = time.time()
 from flask import Flask, jsonify, request
 
 from chemic.image_classifier import ImageClassifier
-from chemic.config import Config
 
 app = Flask(__name__)
 end = time.time()
 print(f'ChemIC web service {__name__} is ready to work...')
 print(f"Launching took {time.strftime('%H:%M:%S', time.gmtime(end - start))}")
 
-# Load ML models
-classifier_model= Config().get_models()
-
 # Creating an instance of Chemical ImageClassifier
-image_classifier = ImageClassifier(classifier_model)
+image_classifier = ImageClassifier()
 
 @app.route('/classify_image', methods=['POST'])
 def classify_image():

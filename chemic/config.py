@@ -11,7 +11,7 @@ Author:
     a.krasnov@digital-science.com
     Date: February 26, 2024
 """
-
+from functools import lru_cache
 import io
 import zipfile
 from pathlib import Path
@@ -20,10 +20,10 @@ import requests
 import torch
 from torchvision import models
 
+# Get the absolute path of the current file's directory
+CURRENT_DIR = Path(__file__).resolve().parent
 
 class Config:
-    # Get the absolute path of the current file's directory
-    CURRENT_DIR = Path(__file__).resolve().parent
     # Adjust the path to point to the 'models' directory relative to the current file's directory
     MODELS_DIR = CURRENT_DIR / 'models'
 
@@ -33,31 +33,54 @@ class Config:
 
     PROCESSING_UNIT = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+    def __init__(self):
+        """
+        Initializes the Config instance, setting up placeholders for model attributes.
+        """
+        self._classifier = None
+
+    @property
+    def classifier(self):
+        """
+        Returns the classifier model, initializing it if necessary.
+
+        Returns:
+            torch.nn.Module: The initialized classifier model.
+        """
+        if self._classifier is None:
+            self.init_classifier()
+        return self._classifier
+
+    @lru_cache(maxsize=None)
+    def init_classifier(self):
+        """
+        Initializes the classifier model.
+
+        If the model file does not exist locally, it will be downloaded and extracted.
+        The model is then loaded and prepared for inference.
+
+        Returns:
+            torch.nn.Module: The initialized classifier model.
+        """
+        if not Config.IMAGE_CLASSIFIER_MODEL_PATH.exists():
+            print(f'Downloading classifier models from Zenodo..')
+            Config.download_and_extract_chemic_model()
+        model = models.resnet50(pretrained=False)
+        num_classes = 4
+        model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
+        model.load_state_dict(torch.load(Config.IMAGE_CLASSIFIER_MODEL_PATH))
+        self._classifier = model.eval()
+
     @staticmethod
     def download_and_extract_chemic_model():
-        # Download the models.zip file from Zenodo
+        """
+        Downloads and extracts the chemical models archive from a predefined URL.
+
+        This method downloads a ZIP archive containing the model files and extracts it
+        to the specified models directory.
+        """
         url = "https://zenodo.org/record/10709886/files/models.zip"
         response = requests.get(url)
         response.raise_for_status()
-
-        # Extract the contents of the models.zip file
         with zipfile.ZipFile(io.BytesIO(response.content), 'r') as zip_ref:
             zip_ref.extractall(Config.MODELS_DIR)
-
-    @staticmethod
-    def get_classifier_model():
-        if not Config.IMAGE_CLASSIFIER_MODEL_PATH.exists():
-            # Download and extract models if not already downloaded
-            print(f'Downloading models...')
-            Config.download_and_extract_chemic_model()
-
-        model = models.resnet50(pretrained=False)  # False if not using a pretrained model from pytorch
-        num_classes = 4  # Adjust the number of classes in your model
-        model.fc = torch.nn.Linear(model.fc.in_features, num_classes)
-        model.load_state_dict(torch.load(Config.IMAGE_CLASSIFIER_MODEL_PATH))
-        print(f'Model initialized from {Config.IMAGE_CLASSIFIER_MODEL_PATH.name}')
-        return model.eval()
-
-    @staticmethod
-    def get_models():
-        return Config.get_classifier_model()

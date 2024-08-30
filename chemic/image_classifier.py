@@ -58,22 +58,17 @@ transform = v2.Compose([
     v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-# Load ML models
-classifier_model = Config.get_models()
-
 
 class ImageClassifier:
     """
     A class encapsulating image classification functionality.
     """
-    def __init__(self, classifier_model) -> None:
+    def __init__(self) -> None:
         """Initializes the ImageRecognizer instance with queues.
         """
-        self.classifier_model = classifier_model
+        self.classifier_model = Config().classifier
         self.mixed_loader = None
         self.results = []  # Store results of recognition in a list
-        # self.flag = 'ChemIC-ml'
-        # self.version = self.get_package_version(self.flag)
         self.classifier_version = f'ChemIC-ml_{self.classifier_model.__class__.__name__}_50'
 
     def send_to_classifier(self, image_path: str) -> Union[Tuple[Response, int], List]:
@@ -187,8 +182,7 @@ class ImageClassifier:
         transformed_image = transform_type(image).unsqueeze(0)
         return transformed_image
 
-    @staticmethod
-    def inference_label(image):
+    def inference_label(self, image):
         """
         Performs inference on the image and returns the predicted label.
 
@@ -199,7 +193,7 @@ class ImageClassifier:
            - str: Predicted label.
         """
         with torch.no_grad():
-            output = classifier_model(image)
+            output = self.classifier_model(image)
             _, predicted = torch.max(output.data, 1)
             predicted_label = chem_labels[predicted.item()]
             return predicted_label
