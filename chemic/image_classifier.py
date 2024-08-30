@@ -36,11 +36,10 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple, List, Union
+from typing import Tuple, List
 
 import torch
 from PIL import Image
-from flask import jsonify, Response
 from torch.utils.data import DataLoader
 from torchvision.transforms import v2
 
@@ -53,7 +52,6 @@ from chemic.utils import get_package_name_version
 transform = v2.Compose([
     v2.Resize((224, 224)),
     v2.Grayscale(num_output_channels=3),  # Convert to RGB if grayscale
-    # v2.ToTensor(), # will be removed in a future release. Instead we are using next 2 lines:
     v2.ToImage(),  # Convert to PIL Image
     v2.ToDtype(torch.float32, scale=True),  # Convert to float32 and scale to [0, 1]
     v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -72,16 +70,15 @@ class ImageClassifier:
         self.results = []  # Store results of recognition in a list
         self.classifier_version = f"{get_package_name_version('ChemIC-ml')}"
 
-    def send_to_classifier(self, image_path: str) -> Union[Tuple[Response, int], List]:
+    def send_to_classifier(self, image_path: str) -> List[dict]:
         """
-        Enqueues images for classification based on the provided image input.
+        Enqueues images for classification based on the provided image path.
 
         Parameters:
-            - image_input (str): Path to the image file or directory
+            - image_path (str): Path to the image file or directory
 
         Returns:
-            - Union[Tuple[Response, int], List]: Tuple containing success message or error response if input is invalid,
-                                                 or list of classification results.
+            - List[dict]: List of classification results.
         """
         try:
             # Create a DataLoader for the mixed images
@@ -98,13 +95,11 @@ class ImageClassifier:
         else:
             # Perform classification
             self.process_image_files()
-            return jsonify({"message": "Images have been classified."}), 202
+            return self.results
 
     def process_image_files(self) -> None:
         """
         Processes images in the mixed_loader using multithreading.
-        The images are processed concurrently using a ThreadPoolExecutor with a maximum number of worker threads
-        determined by min of the CPU count or number of images in self.mixed_loader.
         """
         with ThreadPoolExecutor(max_workers=min((os.cpu_count()), len(self.mixed_loader))) as executor:
             futures = [executor.submit(self.process_image_file, image_data_) for image_data_ in self.mixed_loader]
@@ -119,10 +114,9 @@ class ImageClassifier:
                 }
                 self.results.append(result_entry)
 
-    def process_image_file(self, image_data: Tuple[str, torch.Tensor]):
+    def process_image_file(self, image_data: Tuple[str, torch.Tensor]) -> Tuple[str, str]:
         """
-        Processes a single image in the mixed_loader and returns the image path and predicted class label by
-        using chemical images classifier.
+        Processes a single image and returns the image path and predicted class label.
 
         Parameters:
         - image_data (Tuple[str, torch.Tensor]): A tuple containing the image path and the corresponding image tensor.
@@ -136,14 +130,18 @@ class ImageClassifier:
             predicted_label = self.inference_label(image=image)
             return image_path, predicted_label
         except Exception as e:
-            return jsonify({'error': str(e)}), 400
+            print(f"Error processing image {image_path}: {str(e)}")
+            return image_path, "Error"
 
-    def process_image_data(self, base64_data):
+    def process_image_data(self, base64_data: str) -> List[dict]:
         """
         Processes base64-encoded image data and adds the result to the results list.
 
         Parameters:
             - base64_data (str): Base64-encoded image data.
+
+        Returns:
+            - List[dict]: List of classification results.
         """
         # Transform the image
         transformed_image = self.transform_base64_image(base64_data, transform_type=transform)
@@ -151,25 +149,32 @@ class ImageClassifier:
         try:
             predicted_label = self.inference_label(image=transformed_image)
         except Exception as e:
-            return jsonify({'error': str(e)}), 400
+            result_entry = {
+                'image_id': None,
+                'predicted_label': f"Error: {str(e)}",
+                'classifier_package': self.classifier_version,
+                'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
+            }
+            self.results.append(result_entry)
+            return self.results
         else:
             result_entry = {
-                'image_id': None,  # TODO: should we use hash of binary object to identify it or just skip image_id?
+                'image_id': None,  # Consider using a hash of the image data as an ID if needed
                 'predicted_label': predicted_label,
                 'classifier_package': self.classifier_version,
                 'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
             }
-            print(f'Result entry {result_entry}')
+            print(f'Result entry: {result_entry}')
             self.results.append(result_entry)
             return self.results
 
     @staticmethod
-    def transform_base64_image(base64_string, transform_type):
+    def transform_base64_image(base64_string: str, transform_type) -> torch.Tensor:
         """
         Function to decode base64 string and apply transformations for further prediction with ML model.
 
         Parameters:
-            - base64_data (str): Base64-encoded image data.
+            - base64_string (str): Base64-encoded image data.
             - transform_type: Transformation to apply to the image.
 
         Returns:
@@ -181,11 +186,11 @@ class ImageClassifier:
         image_stream = BytesIO(decoded_data)
         # Open the image using PIL.Image.open()
         image = Image.open(image_stream)
-        # Apply transformations for images
+        # Apply transformations to the image
         transformed_image = transform_type(image).unsqueeze(0)
         return transformed_image
 
-    def inference_label(self, image):
+    def inference_label(self, image: torch.Tensor) -> str:
         """
         Performs inference on the image and returns the predicted label.
 
@@ -202,7 +207,7 @@ class ImageClassifier:
             return predicted_label
 
     @staticmethod
-    def get_package_version(package_name):
+    def get_package_version(package_name: str) -> str:
         """
         Get the version of the specified Python package.
 
