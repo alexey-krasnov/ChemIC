@@ -47,6 +47,7 @@ from torchvision.transforms import v2
 from chemic.chemical_labels import chem_labels
 from chemic.config import Config
 from chemic.loading_images import MixedImagesDataset
+from chemic.utils import get_package_name_version
 
 # Define the transformation for the images
 transform = v2.Compose([
@@ -69,7 +70,7 @@ class ImageClassifier:
         self.classifier_model = Config().classifier
         self.mixed_loader = None
         self.results = []  # Store results of recognition in a list
-        self.classifier_version = f'ChemIC-ml_{self.classifier_model.__class__.__name__}_50'
+        self.classifier_version = f"{get_package_name_version('ChemIC-ml')}"
 
     def send_to_classifier(self, image_path: str) -> Union[Tuple[Response, int], List]:
         """
@@ -114,6 +115,7 @@ class ImageClassifier:
                     'image_id': Path(image_path).name,
                     'predicted_label': predicted_label,
                     'classifier': self.classifier_version,
+                    'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
                 }
                 self.results.append(result_entry)
 
@@ -155,6 +157,7 @@ class ImageClassifier:
                 'image_id': None,  # TODO: should we use hash of binary object to identify it or just skip image_id?
                 'predicted_label': predicted_label,
                 'classifier': self.classifier_version,
+                'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
             }
             print(f'Result entry {result_entry}')
             self.results.append(result_entry)
