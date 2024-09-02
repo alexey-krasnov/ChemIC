@@ -26,7 +26,7 @@ def show_footer():
             background-color: #f2f2f2;
             color: black;
             text-align: center;
-            padding: 10px;
+            padding: 5px;
             z-index: 999;
         }
         </style>
@@ -50,9 +50,11 @@ def classify_image_from_file(image_file):
             result = response.json()
             if isinstance(result, dict):
                 result['image_id'] = image_file.name
+                result['image_preview'] = img_str  # Add base64 image string
                 return result
             elif isinstance(result, list) and len(result) > 0:
                 result[0]['image_id'] = image_file.name
+                result[0]['image_preview'] = img_str  # Add base64 image string
                 return result[0]
             else:
                 st.error("Unexpected response format.")
@@ -76,8 +78,6 @@ def classify_image_from_path(image_path):
     try:
         response = requests.post(f"{API_URL}/classify_image", data={"image_path": image_path})
 
-        # st.write("API Response:", response.json())
-
         if response.status_code == 200:
             result = response.json()
             if isinstance(result, dict):
@@ -96,8 +96,9 @@ def classify_image_from_path(image_path):
         return None
 
 def create_csv_download_link(df):
+    df.drop('image_preview', axis=1, inplace=True)
     timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    csv = df.to_csv(index=False).encode('utf-8')
+    csv = df.to_csv(index=True).encode('utf-8')  # Include index for CSV
     st.download_button(
         label="Download CSV",
         data=csv,
@@ -140,18 +141,26 @@ def show_home():
     if st.session_state.results:
         st.write("Classification Results:")
 
-        formatted_results = []
+        # Generate image previews and CSV data
+        classification_results = []
+
         for result in st.session_state.results:
-            formatted_results.append({
+            image_preview = f'<img src="data:image/png;base64,{result.get("image_preview")}" width="100"/>'
+            classification_results.append({
                 'image_id': result.get('image_id'),
+                'image_preview': image_preview,  # Add image preview HTML
                 'predicted_label': result.get('predicted_label', 'no chemical structures'),
                 'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
                 'classifier_model': result.get('classifier_model', 'ResNet_50')
             })
 
-        combined_df = pd.DataFrame(formatted_results)
-        st.dataframe(combined_df)
-        create_csv_download_link(combined_df)
+        classification_df = pd.DataFrame(classification_results)
+
+        html = classification_df.to_html(escape=False, index=True)  # Ensure HTML is not escaped
+        st.markdown(html, unsafe_allow_html=True)  # Render HTML in Streamlit
+
+        # Create CSV download link with index and discard image previews
+        create_csv_download_link(df=classification_df)
 
     if st.sidebar.button("Check API Health"):
         try:
@@ -162,7 +171,6 @@ def show_home():
                 st.sidebar.error("API is not healthy.")
         except Exception as e:
             st.sidebar.error(f"Error connecting to API: {e}")
-
 
 def main():
     st.set_page_config(
@@ -193,7 +201,7 @@ def main():
         "img": {
             "padding-right": "2px",
             "background-color": "#FFFFFF",  # White background behind the logo for visibility
-            "border-radius": "5px",  # Rounded edges for the logo background
+            "border-radius": "4px",  # Rounded edges for the logo background
         },
         "span": {
             "color": "#FFFFFF",  # White text color for the navbar buttons
