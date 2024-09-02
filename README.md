@@ -44,18 +44,6 @@ The package consists of three main components:
 
   and the server classifies the images, providing the client with the recognition results.
 
-## Requirements
-* fastapi>=0.112.2
-* uvicorn>=0.30.6
-* numpy>=1.26.3
-* pandas>=2.2.0
-* pillow>=10.2.0
-* requests>=2.31.0
-* scikit-learn>=1.3.2
-* torch>=2.2.0
-* torchmetrics>=1.2.1
-* torchvision>=0.17.0
-
 ## Prepare Workspace Environment with Conda
 ```bash
 # 1. Create and activate conda environment
