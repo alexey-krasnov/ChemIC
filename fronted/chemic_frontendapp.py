@@ -44,8 +44,6 @@ def classify_image_from_file(image_file):
 
         response = requests.post(f"{API_URL}/classify_image", data={"image_data": img_str})
 
-        st.write("API Response:", response.json())
-
         if response.status_code == 200:
             result = response.json()
             if isinstance(result, dict):
@@ -76,7 +74,7 @@ def classify_image_from_path(image_path):
     try:
         response = requests.post(f"{API_URL}/classify_image", data={"image_path": image_path})
 
-        st.write("API Response:", response.json())
+        # st.write("API Response:", response.json())
 
         if response.status_code == 200:
             result = response.json()
@@ -84,8 +82,7 @@ def classify_image_from_path(image_path):
                 result['image_id'] = image_path
                 return result
             elif isinstance(result, list) and len(result) > 0:
-                result[0]['image_id'] = image_path
-                return result[0]
+                return result
             else:
                 st.error("Unexpected response format.")
                 return None
@@ -97,7 +94,7 @@ def classify_image_from_path(image_path):
         return None
 
 def create_csv_download_link(df):
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     csv = df.to_csv(index=False).encode('utf-8')
     st.download_button(
         label="Download CSV",
@@ -135,19 +132,12 @@ def show_home():
 
     elif mode == "Input Image Path":
         image_path = st.text_input("Enter the image path:")
-        if st.button("Classify Image"):
+        if st.button("Classify Images"):
             result = classify_image_from_path(image_path)
             if result:
                 st.write("Classification Results:")
 
-                formatted_result = {
-                    'image_id': result.get('image_id'),
-                    'predicted_label': result.get('predicted_label', 'no chemical structures'),
-                    'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
-                    'classifier_model': result.get('classifier_model', 'ResNet_50')
-                }
-
-                result_df = pd.DataFrame([formatted_result])
+                result_df = pd.DataFrame(result)
                 st.dataframe(result_df)
                 create_csv_download_link(result_df)
 
