@@ -33,7 +33,7 @@ The package consists of three main components:
 - Uses a pre-trained ResNet-50 model and includes data preparation, model training, evaluation, and testing steps.
 
 ### B) Web Service for Chemical Image Classification ([app.py](chemic/app.py)):
-- Provides a Flask web application for classifying chemical images using the trained ResNet-50 model.
+- Provides a FastAPI web application for classifying chemical images using the trained ResNet-50 model.
 - Exposes an endpoint /classify_image for accepting chemical images and returning the predicted class.
 
 ### C) Image Classification Client ([client.py](chemic/client.py)):
@@ -45,8 +45,8 @@ The package consists of three main components:
   and the server classifies the images, providing the client with the recognition results.
 
 ## Requirements
-* Flask>=3.0.0
-* gunicorn>=21.2.0
+* fastapi>=0.112.2
+* uvicorn>=0.30.6
 * numpy>=1.26.3
 * pandas>=2.2.0
 * pillow>=10.2.0
@@ -99,10 +99,10 @@ The directory `models` should contain the pretrained model `chemical_image_class
 
 ## Usage Web Service for Chemical Image Classification
 
-### 1. Start the Flask web server in a production mode
+### 1. Start the FastAPI web server in a production mode
 Run in command line from the directory ChemIC:
 ```bash
-gunicorn -w 1 -b 127.0.0.1:5000 --timeout 3600 chemic.app:app
+uvicorn chemic.app:app --host 127.0.0.1 --port 5000 --workers 1 --timeout-keep-alive 3600
 ```
 - -w 1: Specifies the number of worker processes. In this case, only one worker is used.
   Adjust this value based on your server's capabilities.
@@ -111,7 +111,14 @@ gunicorn -w 1 -b 127.0.0.1:5000 --timeout 3600 chemic.app:app
 - --timeout 3600: Sets the maximum allowed request processing time in seconds.
   Adjust this value based on your application's needs.
 
-## 2. Classify Image with client.py module in CLI
+## 2. Use frontend web interface
+In another CLI run:
+```bash
+streamlit run chemic_frontendapp.py --server.address=0.0.0.0 --server.port=5005
+```
+The command will refer you to ChemIC user web interface.
+
+## 3. Classify Image with client.py module in CLI
 ```bash
  python chemic/client.py --image_path /path/to/images --export_dir /path/to/export
 ```
@@ -123,7 +130,7 @@ OR
 - **--image_data** is the base64 encoded image data.
 - **--export_dir** is the export directory for the results.
 
-## 3. Or use client for classification in your Python code
+## 4. Or use client for classification in your Python code
 ```python
 from chemic.client import ChemClassifierClient
 
@@ -153,13 +160,6 @@ print(recognition_results)
   ...
 ]
 ```
-
-## 4. Use frontend web interface
-In another CLI run:
-```bash
-streamlit run chemic_frontendapp.py --server.address=0.0.0.0 --server.port=5005
-```
-The command will adress you on ChemIC user web interface.
 
 ## Jupyter Notebook
 The [client_image_classifier.ipynb](notebooks/client_image_classifier.ipynb) Jupyter notebook in folder `notebooks` provides an easy-to-use interface for classifying images.

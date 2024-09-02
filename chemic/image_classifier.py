@@ -209,23 +209,3 @@ class ImageClassifier:
             _, predicted = torch.max(output.data, 1)
             predicted_label = chem_labels[predicted.item()]
             return predicted_label
-
-    # def process_image_files(self) -> None:
-    #     for batch in self.mixed_loader:
-    #         image_paths, images = batch
-    #         predictions = self.inference_labels(images)
-    #         for image_path, predicted_label in zip(image_paths, predictions):
-    #             result_entry = {
-    #                 'image_id': Path(image_path).name,
-    #                 'predicted_label': predicted_label,
-    #                 'classifier_package': self.classifier_version,
-    #                 'classifier_model': f"{self.classifier_model.__class__.__name__}_50",
-    #             }
-    #             self.results.append(result_entry)
-    #
-    # def inference_labels(self, images: torch.Tensor) -> List[str]:
-    #     with torch.no_grad():
-    #         output = self.classifier_model(images)
-    #         _, predicted = torch.max(output.data, 1)
-    #         predicted_labels = [chem_labels[p.item()] for p in predicted]
-    #         return predicted_labels
