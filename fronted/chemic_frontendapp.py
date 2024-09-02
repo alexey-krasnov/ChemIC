@@ -14,7 +14,6 @@ from chemic.config import Config
 from docs import show_docs
 
 # Define your API URL
-# API_URL = "http://127.0.0.1:5010"  # Update with your actual API endpoint if different
 API_URL = Config.API_URL
 
 def show_footer():
@@ -111,7 +110,6 @@ def create_csv_download_link(df):
 
 def show_home():
     st.title("Chemical Image Classifier")
-    # st.write("Upload one or more images or provide an image path to classify their chemical content.")
 
     st.sidebar.header("Options")
     current_mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path: Local Server Run"])
@@ -121,25 +119,50 @@ def show_home():
         st.session_state.mode = None
     if 'results' not in st.session_state:
         st.session_state.results = None
+    if "uploader_key" not in st.session_state:
+        st.session_state["uploader_key"] = 0
 
+    st.write(f"Uploader_key: {st.session_state.uploader_key}")
     # Update mode and clear results if mode changes
     if st.session_state.mode != current_mode:
         st.session_state.mode = current_mode
         st.session_state.results = None
+        st.session_state["uploader_key"] = +1
+
 
     if current_mode == "Upload Images":
         st.write("Upload one or more images to classify their chemical content.")
+        max_images = 10
+        st.write(f"You can upload a maximum of {max_images} images at once.")
 
-        uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg", "tiff", "tif"], accept_multiple_files=True)
+        uploaded_files = st.file_uploader("Choose images...",
+                                          type=["png", "jpg", "jpeg", "tiff", "tif"],
+                                          accept_multiple_files=True,
+                                          key=f"uploader_key{st.session_state['uploader_key']}")
+        # st.write(f"uploaded_files: {uploaded_files}")
         if uploaded_files:
-            results = classify_multiple_images(uploaded_files)
-            if results:
-                st.session_state.results = results
+            if len(uploaded_files) > max_images:
+                st.error(f"You can upload a maximum of {max_images} images at once.")
+            else:
+                # Clear previous results before processing new files
+                results = classify_multiple_images(uploaded_files)
+
+                if results:
+                    st.session_state.results = results
+                    # Increment uploader key to force a refresh of the file uploader
+                    uploaded_files.clear()
+                    st.write(f"Uploader_key after retrieving results: {st.session_state.uploader_key}")
+
+
+        else:
+            st.info("No images uploaded.")
 
     elif current_mode == "Input Image Path: Local Server Run":
-        st.write("Local Server Run Only: Provide an image path to classify their chemical content.")
+        st.write("Local Server Run Only: Provide an image path to classify its chemical content.")
         image_path = st.text_input("Enter the image path:")
         if st.button("Classify Images"):
+            # Clear previous results before processing a new image path
+            st.session_state.results = []
             result = classify_image_from_path(image_path)
             if result:
                 st.session_state.results = result
@@ -167,6 +190,7 @@ def show_home():
 
         # Create CSV download link with index and discard image previews
         create_csv_download_link(df=classification_df)
+        st.session_state.results = []
 
     if st.sidebar.button("Check API Health"):
         try:
@@ -177,6 +201,7 @@ def show_home():
                 st.sidebar.error("API is not healthy.")
         except Exception as e:
             st.sidebar.error(f"Error connecting to API: {e}")
+
 
 def main():
     st.set_page_config(
