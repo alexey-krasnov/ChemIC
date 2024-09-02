@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+
 from chemic.config import Config
 
 start = time.time()

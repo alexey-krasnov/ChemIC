@@ -1,17 +1,17 @@
-import os
 import base64
+import os
 from datetime import datetime
 from io import BytesIO
 
 import pandas as pd
 import requests
-from streamlit_navigation_bar import st_navbar
 import streamlit as st
 from PIL import Image
-from about import show_about
-from docs import show_docs
+from streamlit_navigation_bar import st_navbar
 
+from about import show_about
 from chemic.config import Config
+from docs import show_docs
 
 # Define your API URL
 # API_URL = "http://127.0.0.1:5010"  # Update with your actual API endpoint if different

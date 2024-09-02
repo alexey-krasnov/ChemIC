@@ -31,7 +31,6 @@ from typing import List, Dict, Optional
 from chemic.client import ChemClassifierClient
 from chemic.config import Config
 
-
 server_url=Config.API_URL
 
 # Get the absolute path of the current file's directory
