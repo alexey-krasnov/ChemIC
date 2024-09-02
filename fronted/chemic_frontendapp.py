@@ -125,12 +125,12 @@ def show_home():
     if "uploader_key" not in st.session_state:
         st.session_state["uploader_key"] = 0
 
-    st.write(f"Uploader_key: {st.session_state.uploader_key}")
+    # st.write(f"Uploader_key: {st.session_state.uploader_key}")
     # Update mode and clear results if mode changes
     if st.session_state.mode != current_mode:
         st.session_state.mode = current_mode
         st.session_state.results = None
-        st.session_state["uploader_key"] = +1 # Increment uploader key to force a refresh of the file uploader
+        # st.session_state["uploader_key"] = +1 # Increment uploader key to force a refresh of the file uploader
         st.rerun()  # Refresh Streamlit page to display updated results
 
     if current_mode == "Upload Images":
@@ -156,7 +156,7 @@ def show_home():
                 st.session_state.results = result
 
     if st.session_state.results:
-        # st.write(f"Classification Results: {st.session_state.results}")
+        st.write("Classification Results:")
 
         # Generate image previews and CSV data
         classification_results = []
