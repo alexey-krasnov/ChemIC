@@ -42,19 +42,19 @@ def classify_image_from_file(image_file):
         img = Image.open(image_file)
         buffered = BytesIO()
         img.save(buffered, format="PNG")
-        img_str = base64.b64encode(buffered.getvalue()).decode()
+        img_base64 = base64.b64encode(buffered.getvalue()).decode()
 
-        response = requests.post(f"{API_URL}/classify_image", data={"image_data": img_str})
+        response = requests.post(f"{API_URL}/classify_image", data={"image_data": img_base64})
 
         if response.status_code == 200:
             result = response.json()
             if isinstance(result, dict):
                 result['image_id'] = image_file.name
-                result['image_preview'] = img_str  # Add base64 image string
+                result['image_preview'] = img_base64  # Add base64 image string
                 return result
             elif isinstance(result, list) and len(result) > 0:
                 result[0]['image_id'] = image_file.name
-                result[0]['image_preview'] = img_str  # Add base64 image string
+                result[0]['image_preview'] = img_base64  # Add base64 image string
                 return result[0]
             else:
                 st.error("Unexpected response format.")
@@ -108,10 +108,10 @@ def create_csv_download_link(df):
 
 def show_home():
     st.title("Chemical Image Classifier")
-    st.write("Upload one or more images or provide an image path to classify their chemical content.")
+    # st.write("Upload one or more images or provide an image path to classify their chemical content.")
 
     st.sidebar.header("Options")
-    current_mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path"])
+    current_mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path: Local Server Run"])
 
     # Initialize session state variables
     if 'mode' not in st.session_state:
@@ -125,13 +125,16 @@ def show_home():
         st.session_state.results = None
 
     if current_mode == "Upload Images":
+        st.write("Upload one or more images to classify their chemical content.")
+
         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg", "tiff", "tif"], accept_multiple_files=True)
         if uploaded_files:
             results = classify_multiple_images(uploaded_files)
             if results:
                 st.session_state.results = results
 
-    elif current_mode == "Input Image Path":
+    elif current_mode == "Input Image Path: Local Server Run":
+        st.write("Local Server Run Only: Provide an image path to classify their chemical content.")
         image_path = st.text_input("Enter the image path:")
         if st.button("Classify Images"):
             result = classify_image_from_path(image_path)
