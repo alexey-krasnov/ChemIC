@@ -135,28 +135,7 @@ def show_home():
 
     if current_mode == "Upload Images":
         st.write("Upload one or more images to classify their chemical content.")
-<<<<<<< HEAD
-        max_images = 10
-        st.write(f"You can upload a maximum of {max_images} images at once.")
 
-        uploaded_files = st.file_uploader("Choose images...",
-                                          type=["png", "jpg", "jpeg", "tiff", "tif"],
-                                          accept_multiple_files=True,
-                                          key=f"uploader_key{st.session_state['uploader_key']}")
-        if uploaded_files:
-            st.write(f"uploaded_files: {uploaded_files}")
-            if len(uploaded_files) > max_images:
-                st.error(f"You can upload a maximum of {max_images} images at once.")
-            else:
-                results = classify_multiple_images(uploaded_files)
-
-                if results:
-                    st.session_state.results = results
-                    uploaded_files.clear()
-
-        else:
-            st.info("No images uploaded.")
-=======
         st.write(f"Maximum numer of uploading images at once: {MAX_UPLOAD_IMAGES}")
         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg", "tiff", "tif"], accept_multiple_files=True)
         if uploaded_files:
@@ -165,7 +144,6 @@ def show_home():
             results = classify_multiple_images(uploaded_files)
             if results:
                 st.session_state.results = results
->>>>>>> master
 
     elif current_mode == "Input Image Path: Local Server Run":
         st.write("Local Server Run Only: Provide an image path to classify its chemical content.")
