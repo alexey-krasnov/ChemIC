@@ -1,9 +1,11 @@
+import os
 import base64
 from datetime import datetime
 from io import BytesIO
 
 import pandas as pd
 import requests
+from streamlit_navigation_bar import st_navbar
 import streamlit as st
 from PIL import Image
 
@@ -42,7 +44,6 @@ def classify_image_from_file(image_file):
 
         response = requests.post(f"{API_URL}/classify_image", data={"image_data": img_str})
 
-        # Inspect the raw response to see what it looks like
         st.write("API Response:", response.json())
 
         if response.status_code == 200:
@@ -52,7 +53,7 @@ def classify_image_from_file(image_file):
                 return result
             elif isinstance(result, list) and len(result) > 0:
                 result[0]['image_id'] = image_file.name
-                return result[0]  # Assuming we're dealing with a single result for this example
+                return result[0]
             else:
                 st.error("Unexpected response format.")
                 return None
@@ -75,7 +76,6 @@ def classify_image_from_path(image_path):
     try:
         response = requests.post(f"{API_URL}/classify_image", data={"image_path": image_path})
 
-        # Inspect the raw response to see what it looks like
         st.write("API Response:", response.json())
 
         if response.status_code == 200:
@@ -85,7 +85,7 @@ def classify_image_from_path(image_path):
                 return result
             elif isinstance(result, list) and len(result) > 0:
                 result[0]['image_id'] = image_path
-                return result[0]  # Assuming we're dealing with a single result for this example
+                return result[0]
             else:
                 st.error("Unexpected response format.")
                 return None
@@ -106,13 +106,7 @@ def create_csv_download_link(df):
         mime="text/csv",
     )
 
-def main():
-    st.set_page_config(
-        page_title="Chemical Image Classifier",
-        page_icon=":test_tube:",
-        layout="wide",
-    )
-
+def show_home():
     st.title("Chemical Image Classifier")
     st.write("Upload one or more images or provide an image path to classify their chemical content.")
 
@@ -166,6 +160,98 @@ def main():
                 st.sidebar.error("API is not healthy.")
         except Exception as e:
             st.sidebar.error(f"Error connecting to API: {e}")
+
+def show_about():
+    st.title("About Chemical Image Classifier")
+
+    st.write("""
+    **Chemical Image Classifier** is a tool developed to classify chemical structures from images using advanced machine learning models.
+
+    ### Author
+    **Dr. Aleksei Krasnov**  
+    Digital Science GmbH (OntoChem)  
+    Email: [a.krasnov@digital-science.com](mailto:a.krasnov@digital-science.com)
+
+    ### Address
+    Digital Science GmbH (OntoChem)  
+    Blücherstrasse 24  
+    06120 Halle (Saale)  
+    Germany
+    """)
+
+def main():
+    st.set_page_config(
+        page_title="Chemical Image Classifier",
+        page_icon=":test_tube:",
+        layout="wide",
+    )
+
+    parent_dir = os.path.dirname(os.path.abspath(__file__))
+    logo_path = os.path.join(parent_dir, "public/ChemIC.svg")
+
+    pages = [
+        "Home",
+        "About",
+        "GitHub",
+    ]
+
+    urls = {"GitHub": "https://github.com/ontochem/ChemIC"}
+
+    styles = {
+        "nav": {
+            "background-color": "#333333",  # Dark gray for the header bar
+            "justify-content": "middle",
+            "font-family": "Bahnschrift, sans-serif",
+            "padding": "0 10px",  # Reduced padding for closer buttons
+        },
+        "img": {
+            "padding-right": "10px",
+            "background-color": "#FFFFFF",  # White background behind the logo for visibility
+            "border-radius": "5px",  # Rounded edges for the logo background
+        },
+        "span": {
+            "color": "#FFFFFF",  # White text color for the navbar buttons
+            "padding": "10px",
+            "font-family": "Bahnschrift, sans-serif",
+            "background-color": "#555555",  # Medium gray background for buttons in normal state
+            "margin": "0 5px",  # Spacing between the buttons
+            "border-radius": "3px",  # Slight rounding for buttons
+        },
+        "active": {
+            "color": "#FFFFFF",  # White text color for active buttons
+            "background-color": "#777777",  # Light gray for active buttons
+            "font-weight": "bold",  # Make the active button text bold
+            "padding": "10px",
+            "font-family": "Bahnschrift, sans-serif",
+            "border-radius": "3px",  # Matching rounding for active buttons
+        },
+        "hover": {
+            "background-color": "#444444",  # Slightly darker gray for buttons on hover
+            "color": "#FFFFFF",  # White text color for hover state
+        }
+    }
+
+    options = {
+        "show_menu": False,
+        "show_sidebar": False,
+    }
+
+    page = st_navbar(
+        pages,
+        logo_path=logo_path,
+        urls=urls,
+        styles=styles,
+        options=options,
+    )
+
+    functions = {
+        "Home": show_home,
+        "About": show_about,
+    }
+
+    go_to = functions.get(page)
+    if go_to:
+        go_to()
 
     show_footer()
 
