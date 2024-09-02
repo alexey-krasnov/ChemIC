@@ -17,6 +17,8 @@ from docs import show_docs
 # API_URL = "http://127.0.0.1:5010"  # Update with your actual API endpoint if different
 API_URL = Config.API_URL
 
+MAX_UPLOAD_IMAGES =100
+
 def show_footer():
     st.markdown(
         """
@@ -71,7 +73,7 @@ def classify_image_from_file(image_file):
 
 def classify_multiple_images(image_files):
     results = []
-    for image_file in image_files:
+    for image_file in image_files[:MAX_UPLOAD_IMAGES]:
         result = classify_image_from_file(image_file)
         if result:
             results.append(result)
@@ -129,9 +131,11 @@ def show_home():
 
     if current_mode == "Upload Images":
         st.write("Upload one or more images to classify their chemical content.")
-
+        st.write(f"Maximum numer of uploading images at once: {MAX_UPLOAD_IMAGES}")
         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg", "tiff", "tif"], accept_multiple_files=True)
         if uploaded_files:
+            if len(uploaded_files) > MAX_UPLOAD_IMAGES:
+                st.error(f"Maximum number of uploading images reached. Only {MAX_UPLOAD_IMAGES} images will be processed.")
             results = classify_multiple_images(uploaded_files)
             if results:
                 st.session_state.results = results

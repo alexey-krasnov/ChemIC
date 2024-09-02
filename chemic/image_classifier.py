@@ -83,7 +83,7 @@ class ImageClassifier:
             # Create a DataLoader for the mixed images
             mixed_dataset = MixedImagesDataset(path_or_dir=image_path, transform=transform)
             self.mixed_loader = DataLoader(mixed_dataset, batch_size=1, shuffle=False, num_workers=0)
-            self.total_number_images = len(self.mixed_loader)
+            self.total_number_images = +len(self.mixed_loader)
         except Exception as e:
             print(f"Exception: {e} {image_path}")
             result_entry = {
@@ -148,7 +148,7 @@ class ImageClassifier:
         image_hash_id = generate_unique_identifier(base64_encoded_image=base64_data.encode())
         # Transform the image
         transformed_image = self.transform_base64_image(base64_data, transform_type=transform)
-
+        self.total_number_images = +1
         try:
             predicted_label = self.inference_label(image=transformed_image)
         except Exception as e:
