@@ -28,14 +28,12 @@ def show_docs():
     
     **Using image data:**
     ```bash
-    curl -X POST "http://127.0.0.1:5010/classify_image" \
-         -F "image_data=<base64_image_data>"
+    curl -X POST "http://127.0.0.1:5010/classify_image" -F "image_data=<base64_image_data>"
     ```
 
     **Using image path:**
     ```bash
-    curl -X POST "http://127.0.0.1:5010/classify_image" \
-         -F "image_path=<image_path>"
+    curl -X POST "http://127.0.0.1:5010/classify_image" -F "image_path=<image_path>"
     ```
 
     ### 2. Health Check
@@ -57,7 +55,23 @@ def show_docs():
       - `predicted_label`: The label predicted by the classifier.
       - `classifier_package`: The package used for classification.
       - `classifier_model`: The model used for classification.
-
+      ```
+      [
+          {
+            'image_id': 'image_name_1.png',
+            'predicted_label': 'single chemical structure',
+            'classifier_package': 'ChemIC-ml_1.3.1',
+            'classifier_model': 'ResNet_50',
+            },
+          {
+           'image_id': 'image_name_2.png',
+           'predicted_label': 'multiple chemical structures',
+           'classifier_package': 'ChemIC-ml_1.3.1',
+           'classifier_model': 'ResNet_50',
+           },
+          ...
+      ]
+      ```
     **Health Check**:
     - Returns a JSON object with a `status` field indicating the server's health.
 

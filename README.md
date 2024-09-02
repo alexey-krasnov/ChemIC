@@ -137,14 +137,19 @@ recognition_results = client.classify_image(image_data=base64_data)
 
 # Recognition results will be returned in the form of  a list of dictionaries
 print(recognition_results)
-[{'image_id': 'image_name_1.png',
-  'predicted_label': 'single chemical structure',
-  'program': 'ChemIC',
-  'program_version': '1.2'},
- {'image_id': 'image_name_2.png',
-  'predicted_label': 'multiple chemical structures',
-  'program': 'ChemIC',
-  'program_version': '1.2'},
+[
+  {
+    'image_id': 'image_name_1.png',
+    'predicted_label': 'single chemical structure',
+    'classifier_package': 'ChemIC-ml_1.3.1',
+    'classifier_model': 'ResNet_50',
+  },
+ {
+   'image_id': 'image_name_2.png',
+    'predicted_label': 'multiple chemical structures',
+   'classifier_package': 'ChemIC-ml_1.3.1',
+   'classifier_model': 'ResNet_50',
+ },
   ...
 ]
 ```
