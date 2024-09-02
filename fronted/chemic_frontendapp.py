@@ -146,7 +146,7 @@ def show_home():
                 st.session_state.results = results
 
     elif current_mode == "Input Image Path: Local Server Run":
-        st.write("Local Server Run Only: Provide an image path to classify its chemical content.")
+        st.write("For local server use only: Provide an image path to classify the chemical content of image files.")
         image_path = st.text_input("Enter the image path:")
         if st.button("Classify Images"):
             # Clear previous results before processing a new image path
