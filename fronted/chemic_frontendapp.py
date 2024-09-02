@@ -9,6 +9,7 @@ from streamlit_navigation_bar import st_navbar
 import streamlit as st
 from PIL import Image
 from about import show_about
+from docs import show_docs
 
 # Define your API URL
 API_URL = "http://127.0.0.1:5000"  # Update with your actual API endpoint if different
@@ -176,6 +177,7 @@ def main():
     pages = [
         "Home",
         "About",
+        "API Documentation",  # Add the new page
         "GitHub",
     ]
 
@@ -189,7 +191,7 @@ def main():
             "padding": "0 10px",  # Reduced padding for closer buttons
         },
         "img": {
-            "padding-right": "10px",
+            "padding-right": "2px",
             "background-color": "#FFFFFF",  # White background behind the logo for visibility
             "border-radius": "5px",  # Rounded edges for the logo background
         },
@@ -231,6 +233,7 @@ def main():
     functions = {
         "Home": show_home,
         "About": show_about,
+        "API Documentation": show_docs,  # Add the new page
     }
 
     go_to = functions.get(page)
