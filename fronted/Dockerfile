@@ -8,4 +8,4 @@ COPY . /app
 
 EXPOSE 5005
 
-ENTRYPOINT ["streamlit", "run", "chemic_frontendapp.py", "--server.address=0.0.0.0","--server.port=5005"]
+ENTRYPOINT ["streamlit", "run", "chemic_frontendapp.py", "--server.address=0.0.0.0","--server.port=5009"]
