@@ -108,6 +108,7 @@ def create_csv_download_link(df):
         mime="text/csv",
     )
 
+
 def show_home():
     st.title("Chemical Image Classifier")
 
@@ -127,8 +128,8 @@ def show_home():
     if st.session_state.mode != current_mode:
         st.session_state.mode = current_mode
         st.session_state.results = None
-        st.session_state["uploader_key"] = +1
-
+        st.session_state["uploader_key"] = +1 # Increment uploader key to force a refresh of the file uploader
+        st.rerun()  # Refresh Streamlit page to display updated results
 
     if current_mode == "Upload Images":
         st.write("Upload one or more images to classify their chemical content.")
@@ -139,20 +140,16 @@ def show_home():
                                           type=["png", "jpg", "jpeg", "tiff", "tif"],
                                           accept_multiple_files=True,
                                           key=f"uploader_key{st.session_state['uploader_key']}")
-        # st.write(f"uploaded_files: {uploaded_files}")
         if uploaded_files:
+            st.write(f"uploaded_files: {uploaded_files}")
             if len(uploaded_files) > max_images:
                 st.error(f"You can upload a maximum of {max_images} images at once.")
             else:
-                # Clear previous results before processing new files
                 results = classify_multiple_images(uploaded_files)
 
                 if results:
                     st.session_state.results = results
-                    # Increment uploader key to force a refresh of the file uploader
                     uploaded_files.clear()
-                    st.write(f"Uploader_key after retrieving results: {st.session_state.uploader_key}")
-
 
         else:
             st.info("No images uploaded.")
@@ -168,7 +165,7 @@ def show_home():
                 st.session_state.results = result
 
     if st.session_state.results:
-        st.write("Classification Results:")
+        # st.write(f"Classification Results: {st.session_state.results}")
 
         # Generate image previews and CSV data
         classification_results = []
@@ -182,7 +179,7 @@ def show_home():
                 'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
                 'classifier_model': result.get('classifier_model', 'ResNet_50')
             })
-
+        st.session_state.results = None
         classification_df = pd.DataFrame(classification_results)
 
         html = classification_df.to_html(escape=False, index=True)  # Ensure HTML is not escaped
@@ -190,7 +187,6 @@ def show_home():
 
         # Create CSV download link with index and discard image previews
         create_csv_download_link(df=classification_df)
-        st.session_state.results = []
 
     if st.sidebar.button("Check API Health"):
         try:
