@@ -8,6 +8,7 @@ import requests
 from streamlit_navigation_bar import st_navbar
 import streamlit as st
 from PIL import Image
+from about import show_about
 
 # Define your API URL
 API_URL = "http://127.0.0.1:5000"  # Update with your actual API endpoint if different
@@ -103,43 +104,149 @@ def create_csv_download_link(df):
         mime="text/csv",
     )
 
+# def show_home():
+#     st.title("Chemical Image Classifier")
+#     st.write("Upload one or more images or provide an image path to classify their chemical content.")
+#
+#     st.sidebar.header("Options")
+#     mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path"])
+#
+#     if mode == "Upload Images":
+#         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
+#         if uploaded_files:
+#             results = classify_multiple_images(uploaded_files)
+#             if results:
+#                 st.write("Classification Results:")
+#
+#                 formatted_results = []
+#                 for result in results:
+#                     formatted_results.append({
+#                         'image_id': result.get('image_id'),
+#                         'predicted_label': result.get('predicted_label', 'no chemical structures'),
+#                         'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
+#                         'classifier_model': result.get('classifier_model', 'ResNet_50')
+#                     })
+#
+#                 combined_df = pd.DataFrame(formatted_results)
+#                 st.dataframe(combined_df)
+#                 create_csv_download_link(combined_df)
+#
+#     elif mode == "Input Image Path":
+#         image_path = st.text_input("Enter the image path:")
+#         if st.button("Classify Images"):
+#             result = classify_image_from_path(image_path)
+#             if result:
+#                 st.write("Classification Results:")
+#
+#                 combined_df = pd.DataFrame(result)
+#                 st.dataframe(combined_df)
+#                 create_csv_download_link(combined_df)
+#
+#     if st.sidebar.button("Check API Health"):
+#         try:
+#             response = requests.get(f"{API_URL}/healthcheck")
+#             if response.status_code == 200:
+#                 st.sidebar.success("API is up and running!")
+#             else:
+#                 st.sidebar.error("API is not healthy.")
+#         except Exception as e:
+#             st.sidebar.error(f"Error connecting to API: {e}")
+# def show_home():
+#     st.title("Chemical Image Classifier")
+#     st.write("Upload one or more images or provide an image path to classify their chemical content.")
+#
+#     st.sidebar.header("Options")
+#     mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path"])
+#
+#     if 'results' not in st.session_state:
+#         st.session_state.results = None
+#
+#     if mode == "Upload Images":
+#         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
+#         if uploaded_files:
+#             results = classify_multiple_images(uploaded_files)
+#             if results:
+#                 st.session_state.results = results
+#
+#     elif mode == "Input Image Path":
+#         image_path = st.text_input("Enter the image path:")
+#         if st.button("Classify Images"):
+#             result = classify_image_from_path(image_path)
+#             if result:
+#                 st.session_state.results = result
+#
+#     if st.session_state.results:
+#         st.write("Classification Results:")
+#
+#         formatted_results = []
+#         for result in st.session_state.results:
+#             formatted_results.append({
+#                 'image_id': result.get('image_id'),
+#                 'predicted_label': result.get('predicted_label', 'no chemical structures'),
+#                 'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
+#                 'classifier_model': result.get('classifier_model', 'ResNet_50')
+#             })
+#
+#         combined_df = pd.DataFrame(formatted_results)
+#         st.dataframe(combined_df)
+#         create_csv_download_link(combined_df)
+#
+#     if st.sidebar.button("Check API Health"):
+#         try:
+#             response = requests.get(f"{API_URL}/healthcheck")
+#             if response.status_code == 200:
+#                 st.sidebar.success("API is up and running!")
+#             else:
+#                 st.sidebar.error("API is not healthy.")
+#         except Exception as e:
+#             st.sidebar.error(f"Error connecting to API: {e}")
 def show_home():
     st.title("Chemical Image Classifier")
     st.write("Upload one or more images or provide an image path to classify their chemical content.")
 
     st.sidebar.header("Options")
-    mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path"])
+    current_mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path"])
 
-    if mode == "Upload Images":
+    # Initialize session state variables
+    if 'mode' not in st.session_state:
+        st.session_state.mode = None
+    if 'results' not in st.session_state:
+        st.session_state.results = None
+
+    # Update mode and clear results if mode changes
+    if st.session_state.mode != current_mode:
+        st.session_state.mode = current_mode
+        st.session_state.results = None
+
+    if current_mode == "Upload Images":
         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg"], accept_multiple_files=True)
         if uploaded_files:
             results = classify_multiple_images(uploaded_files)
             if results:
-                st.write("Classification Results:")
+                st.session_state.results = results
 
-                formatted_results = []
-                for result in results:
-                    formatted_results.append({
-                        'image_id': result.get('image_id'),
-                        'predicted_label': result.get('predicted_label', 'no chemical structures'),
-                        'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
-                        'classifier_model': result.get('classifier_model', 'ResNet_50')
-                    })
-
-                combined_df = pd.DataFrame(formatted_results)
-                st.dataframe(combined_df)
-                create_csv_download_link(combined_df)
-
-    elif mode == "Input Image Path":
+    elif current_mode == "Input Image Path":
         image_path = st.text_input("Enter the image path:")
         if st.button("Classify Images"):
             result = classify_image_from_path(image_path)
             if result:
-                st.write("Classification Results:")
+                st.session_state.results = result
 
-                result_df = pd.DataFrame(result)
-                st.dataframe(result_df)
-                create_csv_download_link(result_df)
+    if st.session_state.results:
+        st.write("Classification Results:")
+
+        formatted_results = []
+        for result in st.session_state.results:
+            formatted_results.append({
+                'image_id': result.get('image_id'),
+                'predicted_label': result.get('predicted_label', 'no chemical structures'),
+                'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
+                'classifier_model': result.get('classifier_model', 'ResNet_50')
+            })
+
+        combined_df = pd.DataFrame(formatted_results)
+        st.dataframe(combined_df)
+        create_csv_download_link(combined_df)
 
     if st.sidebar.button("Check API Health"):
         try:
@@ -151,23 +258,6 @@ def show_home():
         except Exception as e:
             st.sidebar.error(f"Error connecting to API: {e}")
 
-def show_about():
-    st.title("About Chemical Image Classifier")
-
-    st.write("""
-    **Chemical Image Classifier** is a tool developed to classify chemical structures from images using advanced machine learning models.
-
-    ### Author
-    **Dr. Aleksei Krasnov**  
-    Digital Science GmbH (OntoChem)  
-    Email: [a.krasnov@digital-science.com](mailto:a.krasnov@digital-science.com)
-
-    ### Address
-    Digital Science GmbH (OntoChem)  
-    Blücherstrasse 24  
-    06120 Halle (Saale)  
-    Germany
-    """)
 
 def main():
     st.set_page_config(
