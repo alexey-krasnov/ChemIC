@@ -33,6 +33,8 @@ class Config:
 
     PROCESSING_UNIT = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+    API_URL = 'http://127.0.0.1:5010'
+
     def __init__(self):
         """
         Initializes the Config instance, setting up placeholders for model attributes.

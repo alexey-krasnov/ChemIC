@@ -11,8 +11,11 @@ from PIL import Image
 from about import show_about
 from docs import show_docs
 
+from chemic.config import Config
+
 # Define your API URL
-API_URL = "http://127.0.0.1:5010"  # Update with your actual API endpoint if different
+# API_URL = "http://127.0.0.1:5010"  # Update with your actual API endpoint if different
+API_URL = Config.API_URL
 
 def show_footer():
     st.markdown(

@@ -29,8 +29,10 @@ from pathlib import Path
 from typing import List, Dict, Optional
 
 from chemic.client import ChemClassifierClient
+from chemic.config import Config
 
-server_url='http://127.0.0.1:5000'
+
+server_url=Config.API_URL
 
 # Get the absolute path of the current file's directory
 CURRENT_DIR = Path(__file__).resolve().parent

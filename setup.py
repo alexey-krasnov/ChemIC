@@ -12,7 +12,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ChemIC-ml",
-    version="1.3",
+    version="1.3.1",
     description="Chemical images classification project. Program for training the deep neural network model and web service for classification  chemical images",
     long_description=long_description,
     long_description_content_type="text/markdown",

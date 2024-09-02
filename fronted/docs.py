@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def show_docs():
     st.title("ChemIC API Documentation")
 
@@ -27,13 +28,13 @@ def show_docs():
     
     **Using image data:**
     ```bash
-    curl -X POST "http://127.0.0.1:5000/classify_image" \
+    curl -X POST "http://127.0.0.1:5010/classify_image" \
          -F "image_data=<base64_image_data>"
     ```
 
     **Using image path:**
     ```bash
-    curl -X POST "http://127.0.0.1:5000/classify_image" \
+    curl -X POST "http://127.0.0.1:5010/classify_image" \
          -F "image_path=<image_path>"
     ```
 
@@ -45,7 +46,7 @@ def show_docs():
 
     **Example Request:**
     ```bash
-    curl -X GET "http://127.0.0.1:5000/healthcheck"
+    curl -X GET "http://127.0.0.1:5010/healthcheck"
     ```
 
     ## Response Format

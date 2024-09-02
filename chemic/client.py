@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pandas as pd
 import requests
+from chemic.config import Config
 
 start = time.time()
 
@@ -102,7 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # URL for the combined image processing endpoint
-    server_url = 'http://127.0.0.1:5000'
+    server_url = Config.API_URL
 
     # Create an instance of the client
     client = ChemClassifierClient(server_url)

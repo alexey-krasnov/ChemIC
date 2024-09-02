@@ -106,7 +106,7 @@ uvicorn chemic.app:app --host 127.0.0.1 --port 5010 --workers 1 --timeout-keep-a
 ```
 - -w 1: Specifies the number of worker processes. In this case, only one worker is used.
   Adjust this value based on your server's capabilities.
-- -b 127.0.0.1:5000: Binds the application to the specified address and port. Change
+- -b 127.0.0.1:5010: Binds the application to the specified address and port. Change
   the address and port as needed.
 - --timeout 3600: Sets the maximum allowed request processing time in seconds.
   Adjust this value based on your application's needs.
