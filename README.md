@@ -102,7 +102,7 @@ The directory `models` should contain the pretrained model `chemical_image_class
 ### 1. Start the FastAPI web server in a production mode
 Run in command line from the directory ChemIC:
 ```bash
-uvicorn chemic.app:app --host 127.0.0.1 --port 5000 --workers 1 --timeout-keep-alive 3600
+uvicorn chemic.app:app --host 127.0.0.1 --port 5010 --workers 1 --timeout-keep-alive 3600
 ```
 - -w 1: Specifies the number of worker processes. In this case, only one worker is used.
   Adjust this value based on your server's capabilities.
@@ -114,7 +114,7 @@ uvicorn chemic.app:app --host 127.0.0.1 --port 5000 --workers 1 --timeout-keep-a
 ## 2. Use frontend web interface
 In another CLI run:
 ```bash
-streamlit run chemic_frontendapp.py --server.address=0.0.0.0 --server.port=5005
+streamlit run chemic_frontendapp.py --server.address=0.0.0.0 --server.port=5009
 ```
 The command will refer you to ChemIC user web interface.
 
@@ -134,7 +134,7 @@ OR
 ```python
 from chemic.client import ChemClassifierClient
 
-client = ChemClassifierClient(server_url='http://127.0.0.1:5000')
+client = ChemClassifierClient(server_url='http://127.0.0.1:5010')
 # Check the health of the server
 health_status = client.healthcheck().get('status')
 print(f"Health Status: {health_status}")
