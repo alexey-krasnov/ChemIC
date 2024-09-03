@@ -1,12 +1,14 @@
 import base64
 import os
 from datetime import datetime
-from io import BytesIO
+from io import BytesIO, IOBase
 import subprocess
 import pandas as pd
 import requests
+import psutil
 import streamlit as st
 from PIL import Image
+from pathlib import Path
 from streamlit_navigation_bar import st_navbar
 
 from about import show_about
@@ -16,7 +18,21 @@ from docs import show_docs
 # Define your API URL
 API_URL = Config.API_URL
 
-MAX_UPLOAD_IMAGES =100
+MAX_UPLOAD_IMAGES = 100
+
+def is_uvicorn_running():
+    """
+    Checks if there's any running process with 'uvicorn' and 'chemic.app:app'.
+    Returns True if such a process is found, otherwise False.
+    """
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            cmdline = proc.info['cmdline']
+            if cmdline and "uvicorn" in cmdline and "chemic.app:app" in cmdline:
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            continue
+    return False
 
 def start_uvicorn():
     log_file = open("uvicorn_log.txt", "w")
@@ -26,7 +42,6 @@ def start_uvicorn():
         stderr=subprocess.STDOUT
     )
     return process
-
 
 def show_footer():
     st.markdown(
@@ -51,9 +66,29 @@ def show_footer():
         unsafe_allow_html=True,
     )
 
+def load_example_images():
+    """
+    Load example image paths from the example_images directory.
+    """
+    image_dir = Path("example_images").resolve()  # Ensure absolute path
+    images = []
+
+    # Iterate over all image files in the directory
+    for image_path in image_dir.glob("*"):
+        if image_path.suffix.lower() in ('.png', '.jpg', '.jpeg', '.tiff', '.tif'):
+            images.append(image_path)
+    return images
+
+
 def classify_image_from_file(image_file):
     try:
-        img = Image.open(image_file)
+        # Ensure image_file is a file-like object
+        if isinstance(image_file, (BytesIO, IOBase)):
+            img = Image.open(image_file)
+        else:
+            # If image_file is a path, open it
+            img = Image.open(image_file)
+
         buffered = BytesIO()
         img.save(buffered, format="PNG")
         img_base64 = base64.b64encode(buffered.getvalue()).decode()
@@ -63,11 +98,11 @@ def classify_image_from_file(image_file):
         if response.status_code == 200:
             result = response.json()
             if isinstance(result, dict):
-                result['image_id'] = image_file.name
+                result['image_id'] = getattr(image_file, 'name', 'unknown')
                 result['image_preview'] = img_base64  # Add base64 image string
                 return result
             elif isinstance(result, list) and len(result) > 0:
-                result[0]['image_id'] = image_file.name
+                result[0]['image_id'] = getattr(image_file, 'name', 'unknown')
                 result[0]['image_preview'] = img_base64  # Add base64 image string
                 return result[0]
             else:
@@ -120,12 +155,12 @@ def create_csv_download_link(df):
         mime="text/csv",
     )
 
-
 def show_home():
     st.title("Chemical Image Classifier")
 
     st.sidebar.header("Options")
     current_mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path: Local Server Run"])
+
 
     # Initialize session state variables
     if 'mode' not in st.session_state:
@@ -135,19 +170,31 @@ def show_home():
     if "uploader_key" not in st.session_state:
         st.session_state["uploader_key"] = 0
 
-    # st.write(f"Uploader_key: {st.session_state.uploader_key}")
     # Update mode and clear results if mode changes
     if st.session_state.mode != current_mode:
         st.session_state.mode = current_mode
         st.session_state.results = None
-        # st.session_state["uploader_key"] = +1 # Increment uploader key to force a refresh of the file uploader
         st.rerun()  # Refresh Streamlit page to display updated results
+
+    # Load example images
+    example_images = load_example_images()
+
+    selected_example_images = st.sidebar.multiselect(
+        "Choose example images",
+        [img.name for img in example_images],
+    )
 
     if current_mode == "Upload Images":
         st.write("Upload one or more images to classify their chemical content.")
 
-        st.write(f"Maximum numer of uploading images at once: {MAX_UPLOAD_IMAGES}")
+        st.write(f"Maximum number of uploading images at once: {MAX_UPLOAD_IMAGES}")
         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg", "tiff", "tif"], accept_multiple_files=True)
+
+        # Append selected example images to the uploaded files
+        if selected_example_images:
+            uploaded_files = list(uploaded_files) if uploaded_files else []
+            uploaded_files.extend([img for img in example_images if img.name in selected_example_images])
+
         if uploaded_files:
             if len(uploaded_files) > MAX_UPLOAD_IMAGES:
                 st.error(f"Maximum number of uploading images reached. Only {MAX_UPLOAD_IMAGES} images will be processed.")
@@ -281,7 +328,10 @@ def main():
 
 if __name__ == "__main__":
     try:
-        backend_process = start_uvicorn()
+        if not is_uvicorn_running():
+            backend_process = start_uvicorn()
+        else:
+            print("Uvicorn is already running.")
     except Exception as e:
         print(f"Error starting backend server: {e}")
     else:
