@@ -1,5 +1,1 @@
-streamlit
-streamlit-navigation-bar
-streamlit_extras
-streamlit-toggle-switch
-streamlit_ketcher
+ChemIC-ml

@@ -2,7 +2,7 @@ import base64
 import os
 from datetime import datetime
 from io import BytesIO
-
+import subprocess
 import pandas as pd
 import requests
 import streamlit as st
@@ -17,6 +17,16 @@ from docs import show_docs
 API_URL = Config.API_URL
 
 MAX_UPLOAD_IMAGES =100
+
+def start_uvicorn():
+    log_file = open("uvicorn_log.txt", "w")
+    process = subprocess.Popen(
+        ["uvicorn", "chemic.app:app", "--host", "127.0.0.1", "--port", "5010", "--workers", "1", "--timeout-keep-alive", "3600"],
+        stdout=log_file,
+        stderr=subprocess.STDOUT
+    )
+    return process
+
 
 def show_footer():
     st.markdown(
@@ -191,6 +201,7 @@ def show_home():
 
 
 def main():
+
     st.set_page_config(
         page_title="Chemical Image Classifier",
         page_icon=":test_tube:",
@@ -266,7 +277,12 @@ def main():
     if go_to:
         go_to()
 
-    show_footer()
+        show_footer()
 
 if __name__ == "__main__":
-    main()
+    try:
+        backend_process = start_uvicorn()
+    except Exception as e:
+        print(f"Error starting backend server: {e}")
+    else:
+        main()

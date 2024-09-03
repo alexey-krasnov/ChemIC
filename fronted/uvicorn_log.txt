@@ -1,0 +1,45 @@
+/Users/alekseikrasov/miniforge3/envs/chemicr_3.11/lib/python3.11/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/Users/alekseikrasov/miniforge3/envs/chemicr_3.11/lib/python3.11/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=None`.
+  warnings.warn(msg)
+INFO:     Started server process [33528]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 48] error while attempting to bind on address ('127.0.0.1', 5010): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+ChemIC web service chemic.app is ready to work...
+Launching took 00:00:00
+b', 'predicted_label': 'chemical reactions', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}
+[{'image_id': '513a8d95535e8750124352310338b08b30bdc3b8f7c757f5444d0d29b38c8b4b', 'predicted_label': 'chemical reactions', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}]
+Total number of images processed: 1
+INFO:     127.0.0.1:57777 - "POST /classify_image HTTP/1.1" 200 OK
+Server received image data
+Result entry: {'image_id': '3f29e68d04130860ba3caa32ae64701b3d7f90eb5b8e5ea9daf9f56f1f302484', 'predicted_label': 'chemical reactions', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}
+[{'image_id': '3f29e68d04130860ba3caa32ae64701b3d7f90eb5b8e5ea9daf9f56f1f302484', 'predicted_label': 'chemical reactions', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}]
+Total number of images processed: 1
+INFO:     127.0.0.1:57778 - "POST /classify_image HTTP/1.1" 200 OK
+Server received image data
+Result entry: {'image_id': '4b074971e431cb5d068c7d318803d2c46df28e42a410dfa328c1da2a9cc5cfa1', 'predicted_label': 'single chemical structure', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}
+[{'image_id': '4b074971e431cb5d068c7d318803d2c46df28e42a410dfa328c1da2a9cc5cfa1', 'predicted_label': 'single chemical structure', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}]
+Total number of images processed: 1
+INFO:     127.0.0.1:57779 - "POST /classify_image HTTP/1.1" 200 OK
+Server received image data
+Result entry: {'image_id': '6d9f2e0bf8a6be0d671e82e8e11bcf96db6569c03e0e669f09b9cc77378cda59', 'predicted_label': 'no chemical structures', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}
+[{'image_id': '6d9f2e0bf8a6be0d671e82e8e11bcf96db6569c03e0e669f09b9cc77378cda59', 'predicted_label': 'no chemical structures', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}]
+Total number of images processed: 1
+INFO:     127.0.0.1:57780 - "POST /classify_image HTTP/1.1" 200 OK
+Server received image data
+Result entry: {'image_id': 'ccbf35d103799726dde182a7995d72175869f5e5840fee5d09efbc96226a1dc4', 'predicted_label': 'multiple chemical structures', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}
+[{'image_id': 'ccbf35d103799726dde182a7995d72175869f5e5840fee5d09efbc96226a1dc4', 'predicted_label': 'multiple chemical structures', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}]
+Total number of images processed: 1
+INFO:     127.0.0.1:57781 - "POST /classify_image HTTP/1.1" 200 OK
+Server received image data
+Result entry: {'image_id': '947180772a21852963b55b906093779971875b0d1b0f6e01844c3db0d3acb403', 'predicted_label': 'single chemical structure', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}
+[{'image_id': '947180772a21852963b55b906093779971875b0d1b0f6e01844c3db0d3acb403', 'predicted_label': 'single chemical structure', 'classifier_package': 'ChemIC-ml_1.3.1', 'classifier_model': 'ResNet_50'}]
+Total number of images processed: 1
+INFO:     127.0.0.1:57782 - "POST /classify_image HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33525]
