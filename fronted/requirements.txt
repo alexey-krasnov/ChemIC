@@ -1,1 +1,1 @@
-ChemIC-ml
+git+https://github.com/ontochem/ChemIC.git
