@@ -161,12 +161,13 @@ def show_home():
     st.sidebar.header("Options")
     current_mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path: Local Server Run"])
 
-
     # Initialize session state variables
     if 'mode' not in st.session_state:
         st.session_state.mode = None
     if 'results' not in st.session_state:
         st.session_state.results = None
+    if "uploaded_files" not in st.session_state:
+        st.session_state.uploaded_files = []  # Store uploaded files here
     if "uploader_key" not in st.session_state:
         st.session_state["uploader_key"] = 0
 
@@ -174,6 +175,7 @@ def show_home():
     if st.session_state.mode != current_mode:
         st.session_state.mode = current_mode
         st.session_state.results = None
+        st.session_state.uploaded_files = []  # Clear uploaded files
         st.rerun()  # Refresh Streamlit page to display updated results
 
     # Load example images
@@ -186,21 +188,25 @@ def show_home():
 
     if current_mode == "Upload Images":
         st.write("Upload one or more images to classify their chemical content.")
-
         st.write(f"Maximum number of uploading images at once: {MAX_UPLOAD_IMAGES}")
+
         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg", "tiff", "tif"], accept_multiple_files=True)
+
+        # Update session state with uploaded files
+        if uploaded_files:
+            st.session_state.uploaded_files = uploaded_files
 
         # Append selected example images to the uploaded files
         if selected_example_images:
-            uploaded_files = list(uploaded_files) if uploaded_files else []
-            uploaded_files.extend([img for img in example_images if img.name in selected_example_images])
+            st.session_state.uploaded_files.extend([img for img in example_images if img.name in selected_example_images])
 
-        if uploaded_files:
-            if len(uploaded_files) > MAX_UPLOAD_IMAGES:
+        if st.session_state.uploaded_files:
+            if len(st.session_state.uploaded_files) > MAX_UPLOAD_IMAGES:
                 st.error(f"Maximum number of uploading images reached. Only {MAX_UPLOAD_IMAGES} images will be processed.")
-            results = classify_multiple_images(uploaded_files)
-            if results:
-                st.session_state.results = results
+            with st.spinner('Processing images...'):
+                results = classify_multiple_images(st.session_state.uploaded_files)
+                if results:
+                    st.session_state.results = results
 
     elif current_mode == "Input Image Path: Local Server Run":
         st.write("For local server use only: Provide an image path to classify the chemical content of image files.")
@@ -208,9 +214,10 @@ def show_home():
         if st.button("Classify Images"):
             # Clear previous results before processing a new image path
             st.session_state.results = []
-            result = classify_image_from_path(image_path)
-            if result:
-                st.session_state.results = result
+            with st.spinner('Processing image path...'):
+                result = classify_image_from_path(image_path)
+                if result:
+                    st.session_state.results = result
 
     if st.session_state.results:
         st.write("Classification Results:")
