@@ -35,7 +35,7 @@ def show_footer():
         }
         </style>
         <div class="footer">
-            <p>&copy; 2024 Chemical Image Classifier. All rights reserved.</p>
+            <p>&copy; 2024 ChemIC. Chemical Image Classifier. All rights reserved.</p>
         </div>
         """,
         unsafe_allow_html=True,
@@ -183,9 +183,9 @@ def show_home():
         try:
             response = requests.get(f"{API_URL}/healthcheck")
             if response.status_code == 200:
-                st.sidebar.success("API is up and running!")
+                st.sidebar.success("Server is up and running!")
             else:
-                st.sidebar.error("API is not healthy.")
+                st.sidebar.error("Server is not healthy.")
         except Exception as e:
             st.sidebar.error(f"Error connecting to API: {e}")
 
