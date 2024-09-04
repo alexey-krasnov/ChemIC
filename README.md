@@ -21,7 +21,7 @@
 - [License](#license)
 
 ## User Web Interface
-You can try out the user frontend web interface at https://chemic-ml.streamlit.app/
+You can try out the user frontend web interface at https://chemic-ai.streamlit.app/
 
 ## Project Description
 The Chemical Image Classifier (ChemIC) project provides a solution for classifying chemical images using a Convolutional Neural Network (CNN). The model categorizes images into one of four predefined classes:
