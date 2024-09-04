@@ -20,12 +20,15 @@
 - [References](#references)
 - [License](#license)
 
+## User Web Interface
+You can try out the user frontend web interface at https://chemic-ml.streamlit.app/.
+
 ## Project Description
-The Chemical Image Classifier (ChemIC) project is designed for training and utilizing a Convolutional Neural Network (CNN) model to classify chemical images into one of four predefined classes:
-1. Images with a single chemical structure
-2. Images with chemical reactions
-3. Images with multiple chemical structures
-4. Images with no chemical structures
+The Chemical Image Classifier (ChemIC) project provides a solution for classifying chemical images using a Convolutional Neural Network (CNN). The model categorizes images into one of four predefined classes:
+1. Images containing a single chemical structure.
+2. Images depicting chemical reactions.
+3. Images featuring multiple chemical structures.
+4. Images with no identifiable chemical structures.
 
 The package consists of three main components:
 
