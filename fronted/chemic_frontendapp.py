@@ -3,6 +3,8 @@ import os
 from datetime import datetime
 from io import BytesIO, IOBase
 import subprocess
+
+import duckdb
 import pandas as pd
 import requests
 import psutil
@@ -13,12 +15,78 @@ from streamlit_navigation_bar import st_navbar
 
 from about import show_about
 from chemic.config import API_URL
+from chemic.utils import encode_image_to_base64, generate_unique_identifier
 from docs import show_docs
 
 # Define your API URL
 # API_URL = 'http://127.0.0.1:5010' # Adapt this URL to your own setup
 
 MAX_UPLOAD_IMAGES = 100
+
+
+# def save_to_duckdb(df):
+#     """Save feedback DataFrame to DuckDB database."""
+#     conn = duckdb.connect('chemic.db')
+#     conn.execute("""
+#         CREATE TABLE IF NOT EXISTS feedback (
+#             image_id TEXT,
+#             predicted_label TEXT,
+#             corrected_label TEXT,
+#             image_base64 TEXT
+#         )
+#     """)
+#
+#     # Insert rows one by one
+#     for index, row in df.iterrows():
+#         conn.execute("""
+#             INSERT INTO feedback (image_id, predicted_label, corrected_label, image_base64)
+#             VALUES (?, ?, ?, ?)
+#         """, (row['image_id'], row['predicted_label'], row['corrected_label'], row['image_base64']))
+#     print("Feedback saved to DuckDB")
+#     conn.close()
+
+def ensure_table_exists(conn):
+    """
+    Ensure the feedback table exists in the DuckDB database.
+
+    Parameters:
+    - conn: The DuckDB connection object.
+    """
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS feedback (
+            image_hash_id TEXT,
+            predicted_label TEXT,
+            corrected_label TEXT,
+            image_base64 TEXT,
+            PRIMARY KEY (image_hash_id, corrected_label)
+        )
+    ''')
+
+def save_to_duckdb(df):
+    """Save feedback DataFrame to DuckDB database, ensuring unique records."""
+    conn = duckdb.connect('chemic.db')
+    ensure_table_exists(conn)
+
+    # Insert rows one by one
+    for _, row in df.iterrows():
+        image_base64 = row['image_base64']
+        image_hash_id = generate_unique_identifier(base64_encoded_image=image_base64)
+
+        # Insert only if the image_hash_id and corrected_label combination is not in the table
+        conn.execute('''
+            INSERT OR IGNORE INTO feedback (image_hash_id, predicted_label, corrected_label, image_base64)
+            VALUES (?, ?, ?, ?)
+        ''', (image_hash_id, row['predicted_label'], row['corrected_label'], row['image_base64']))
+
+        # If the corrected label is different, we create a new record with the same image_hash_id
+        if row['predicted_label'] != row['corrected_label']:
+            conn.execute('''
+                INSERT OR REPLACE INTO feedback (image_hash_id, predicted_label, corrected_label, image_base64)
+                VALUES (?, ?, ?, ?)
+            ''', (image_hash_id, row['predicted_label'], row['corrected_label'], row['image_base64']))
+
+    print("Feedback saved to DuckDB")
+    conn.close()
 
 def is_uvicorn_running():
     """
@@ -145,7 +213,8 @@ def classify_image_from_path(image_path):
         return None
 
 def create_csv_download_link(df):
-    df.drop('image_preview', axis=1, inplace=True)
+    if 'image_preview' in df.columns:
+       df.drop('image_preview', axis=1, inplace=True)
     timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     csv = df.to_csv(index=True).encode('utf-8')  # Include index for CSV
     st.download_button(
@@ -155,8 +224,9 @@ def create_csv_download_link(df):
         mime="text/csv",
     )
 
+
 def show_home():
-    st.title("Chemical Image Classifier")
+    st.title("Chemic: Chemical Image Classifier")
 
     st.sidebar.header("Options")
     current_mode = st.sidebar.radio("Select Input Mode", ["Upload Images", "Input Image Path: Local Server Run"])
@@ -167,7 +237,7 @@ def show_home():
     if 'results' not in st.session_state:
         st.session_state.results = None
     if "uploaded_files" not in st.session_state:
-        st.session_state.uploaded_files = []  # Store uploaded files here
+        st.session_state.uploaded_files = []
     if "uploader_key" not in st.session_state:
         st.session_state["uploader_key"] = 0
 
@@ -175,8 +245,8 @@ def show_home():
     if st.session_state.mode != current_mode:
         st.session_state.mode = current_mode
         st.session_state.results = None
-        st.session_state.uploaded_files = []  # Clear uploaded files
-        st.rerun()  # Refresh Streamlit page to display updated results
+        st.session_state.uploaded_files = []
+        st.rerun()
 
     # Load example images
     example_images = load_example_images()
@@ -192,11 +262,9 @@ def show_home():
 
         uploaded_files = st.file_uploader("Choose images...", type=["png", "jpg", "jpeg", "tiff", "tif"], accept_multiple_files=True)
 
-        # Update session state with uploaded files
         if uploaded_files:
             st.session_state.uploaded_files = uploaded_files
 
-        # Append selected example images to the uploaded files
         if selected_example_images:
             st.session_state.uploaded_files.extend([img for img in example_images if img.name in selected_example_images])
 
@@ -212,7 +280,6 @@ def show_home():
         st.write("For local server use only: Provide an image path to classify the chemical content of image files.")
         image_path = st.text_input("Enter the image path:")
         if st.button("Classify Images"):
-            # Clear previous results before processing a new image path
             st.session_state.results = []
             with st.spinner('Processing image path...'):
                 result = classify_image_from_path(image_path)
@@ -222,26 +289,79 @@ def show_home():
     if st.session_state.results:
         st.write("Classification Results:")
 
-        # Generate image previews and CSV data
         classification_results = []
-
         for result in st.session_state.results:
-            image_preview = f'<img src="data:image/png;base64,{result.get("image_preview")}" width="100"/>'
+            image_id = result.get('image_id')
+            predicted_label = result.get('predicted_label', 'no chemical structures')
+            classifier_package = result.get('classifier_package', 'ChemIC-ml_1.3')
+            classifier_model = result.get('classifier_model', 'ResNet_50')
+
+            image_data = Image.open(BytesIO(base64.b64decode(result.get('image_preview'))))
+
+            # Encode image to Base64
+            image_base64 = encode_image_to_base64(image_data)
+            image_preview = f'<img src="data:image/png;base64,{image_base64}" width="100"/>'
+
             classification_results.append({
-                'image_id': result.get('image_id'),
-                'image_preview': image_preview,  # Add image preview HTML
-                'predicted_label': result.get('predicted_label', 'no chemical structures'),
-                'classifier_package': result.get('classifier_package', 'ChemIC-ml_1.3'),
-                'classifier_model': result.get('classifier_model', 'ResNet_50')
+                'image_id': image_id,
+                'image_preview': image_preview,
+                'predicted_label': predicted_label,
+                'classifier_package': classifier_package,
+                'classifier_model': classifier_model,
+                'image_base64': image_base64,
             })
-        st.session_state.results = None
-        classification_df = pd.DataFrame(classification_results)
 
-        html = classification_df.to_html(escape=False, index=True)  # Ensure HTML is not escaped
-        st.markdown(html, unsafe_allow_html=True)  # Render HTML in Streamlit
+        # Create DataFrame and show results
+        feedback_df = pd.DataFrame(classification_results)
 
-        # Create CSV download link with index and discard image previews
-        create_csv_download_link(df=classification_df)
+        display_df = feedback_df.drop('image_base64', axis=1)  # Drop base64 column for display
+
+        # Display DataFrame with image previews
+        html = display_df.to_html(escape=False, index=True)  # Ensure HTML is not escaped
+        st.markdown(html, unsafe_allow_html=True)
+
+        # Create CSV download link
+        create_csv_download_link(df=display_df)
+
+        # Ask if all predictions are correct
+        all_correct = st.radio("Are the predictions correct?", ["Yes", "No"])
+
+        if all_correct == "No":
+            # Define the available options for correction
+            labels = [
+                'single chemical structure',
+                'chemical reactions',
+                'no chemical structures',
+                'multiple chemical structures']
+
+            # User feedback for each image
+            corrected_labels = []
+            for i, result in enumerate(st.session_state.results):
+                image_id = result.get('image_id')
+                predicted_label = result.get('predicted_label', 'no chemical structures')
+
+
+                corrected_label = st.selectbox(
+                    f"Correct label for {image_id}:",
+                    options=[
+                        predicted_label,  # Default selection is the predicted label
+                        # Show all options except the predicted label
+                        *[label for label in labels if label!=predicted_label]
+                            ],
+                    index=0,
+                    key=f"feedback_{i}"
+                )
+                corrected_labels.append(corrected_label)
+
+            # Update DataFrame with corrected labels
+            feedback_df['corrected_label'] = corrected_labels
+
+            # Save feedback to DuckDB if corrected labels are present
+            if (feedback_df['predicted_label'] != feedback_df['corrected_label']).any():
+
+                # FIXME: Implement this part to save to DuckDB, fix encoding to base64 string
+                # save_to_duckdb(feedback_df)
+                st.write("Thanks for your feedback! Your corrected labels have been sent to the developers' team.")
 
     if st.sidebar.button("Check API Health"):
         try:
@@ -253,17 +373,20 @@ def show_home():
         except Exception as e:
             st.sidebar.error(f"Error connecting to API: {e}")
 
-
 def main():
 
     st.set_page_config(
-        page_title="Chemical Image Classifier",
+        page_title="ChemIC: Chemical Image Classifier",
         page_icon=":test_tube:",
         layout="wide",
     )
 
     parent_dir = os.path.dirname(os.path.abspath(__file__))
     logo_path = os.path.join(parent_dir, "public/ChemIC.svg")
+
+    # Navigation and logo
+    st.sidebar.image(logo_path, width=200)
+
 
     pages = [
         "Home",
@@ -315,7 +438,6 @@ def main():
 
     page = st_navbar(
         pages,
-        logo_path=logo_path,
         urls=urls,
         styles=styles,
         options=options,

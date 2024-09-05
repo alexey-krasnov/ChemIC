@@ -64,9 +64,7 @@ class ChemClassifierClient:
 
             # Send a POST request to the server
             response = requests.post(f'{self.server_url}/classify_images', data=data)
-            # response.raise_for_status()  # Raise an HTTPError for bad responses
-
-            print(response.json())
+            response.raise_for_status()  # Raise an HTTPError for bad responses
             # Parse the JSON response
             return response.json()
 

@@ -1,7 +1,7 @@
 import base64
 import hashlib
 import importlib.metadata
-
+from io import BytesIO
 
 def generate_unique_identifier(image_path=None, base64_encoded_image=None, np_array=None):
     """
@@ -69,3 +69,11 @@ def get_package_name_version(package_name: str) -> str:
     if version == f"{package_name} is not installed":
         return version
     return f"{package_name}_{version}"
+
+
+def encode_image_to_base64(image):
+    """Encode image to Base64 string."""
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
