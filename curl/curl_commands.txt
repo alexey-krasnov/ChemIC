@@ -1,0 +1,21 @@
+The curl commands for interacting with ChemIC web service:
+
+API_URL = 'http://127.0.0.1:5010' # Adjust URL of you server adress and port number
+
+1. Send Images for Classification:
+
+    A. SEND IMAGE AS PATH TO THE IMAGE FILE FOR CLASSIFICATION
+    curl -X POST -F "image_path=/path/to/your/image" API_URL/classify_images
+    Replace /path/to/your/image with the actual path to the image file or image folder you want to send for classification.
+
+    For example:
+    curl -X POST -F "image_path=/parts/data2/projects/chem-osr-ng/ChemICR/tests/test_images/single_image" http://127.0.0.1:5010/classify_images
+
+    B. SEND IMAGE AS BASE64 ENCODED IMAGE DATA
+    curl -X POST -F "image_data=BASE64_ENCODED_DATA" API_URL/classify_images
+
+    For example:
+    curl -X POST -F "image_data=$(base64 -i /parts/data2/projects/chem-osr-ng/ChemICR/Benchmark/single_image/US07314693-20080101-C00055.png)" http://127.0.0.1:5010/classify_images
+
+2. Healthcheck:
+    curl -X GET http://127.0.0.1:5010/healthcheck

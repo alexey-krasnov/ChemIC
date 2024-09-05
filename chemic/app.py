@@ -26,8 +26,8 @@ class ClassificationResult(BaseModel):
     classifier_package: Optional[str]
     classifier_model: Optional[str]
 
-@app.post("/classify_image", response_model=List[ClassificationResult])
-async def classify_image(image_path: Optional[str] = Form(None), image_data: Optional[str] = Form(None)):
+@app.post("/classify_images", response_model=List[ClassificationResult])
+async def classify_images(image_path: Optional[str] = Form(None), image_data: Optional[str] = Form(None)):
     try:
         image_classifier.results = []  # Reset results for each classification cycle
 

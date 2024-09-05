@@ -12,11 +12,11 @@ from pathlib import Path
 from streamlit_navigation_bar import st_navbar
 
 from about import show_about
-from chemic.config import Config
+from chemic.config import API_URL
 from docs import show_docs
 
 # Define your API URL
-API_URL = Config.API_URL
+# API_URL = 'http://127.0.0.1:5010' # Adapt this URL to your own setup
 
 MAX_UPLOAD_IMAGES = 100
 
@@ -93,7 +93,7 @@ def classify_image_from_file(image_file):
         img.save(buffered, format="PNG")
         img_base64 = base64.b64encode(buffered.getvalue()).decode()
 
-        response = requests.post(f"{API_URL}/classify_image", data={"image_data": img_base64})
+        response = requests.post(f"{API_URL}/classify_images", data={"image_data": img_base64})
 
         if response.status_code == 200:
             result = response.json()
@@ -125,7 +125,7 @@ def classify_multiple_images(image_files):
 
 def classify_image_from_path(image_path):
     try:
-        response = requests.post(f"{API_URL}/classify_image", data={"image_path": image_path})
+        response = requests.post(f"{API_URL}/classify_images", data={"image_path": image_path})
 
         if response.status_code == 200:
             result = response.json()

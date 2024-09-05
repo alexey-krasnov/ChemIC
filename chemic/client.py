@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 import requests
 
-from chemic.config import Config
+from chemic.config import API_URL
 
 start = time.time()
 
@@ -36,7 +36,7 @@ class ChemClassifierClient:
         """
         self.server_url = server_url
 
-    def classify_image(self, image_path: str = None, image_data: str = None):
+    def classify_images(self, image_path: str = None, image_data: str = None):
         """
         Sends a POST request to the server with either the specified image path or image data.
         Returns the classification results in dictionary format.
@@ -63,7 +63,7 @@ class ChemClassifierClient:
                 raise ValueError("Either --image_path or --image_data must be provided.")
 
             # Send a POST request to the server
-            response = requests.post(f'{self.server_url}/classify_image', data=data)
+            response = requests.post(f'{self.server_url}/classify_images', data=data)
             # response.raise_for_status()  # Raise an HTTPError for bad responses
 
             print(response.json())
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # URL for the combined image processing endpoint
-    server_url = Config.API_URL
+    server_url = API_URL
 
     # Create an instance of the client
     client = ChemClassifierClient(server_url)
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     print(f"Health Status: {health_status}")
 
     # Send POST request to classify and predict images
-    recognition_results = client.classify_image(image_path=args.image_path, image_data=args.image_data)
+    recognition_results = client.classify_images(image_path=args.image_path, image_data=args.image_data)
 
     print(recognition_results)
 

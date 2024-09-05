@@ -29,9 +29,9 @@ from pathlib import Path
 from typing import List, Dict, Optional
 
 from chemic.client import ChemClassifierClient
-from chemic.config import Config
+from chemic.config import Config, API_URL
 
-server_url=Config.API_URL
+server_url=API_URL
 
 # Get the absolute path of the current file's directory
 CURRENT_DIR = Path(__file__).resolve().parent
@@ -70,7 +70,7 @@ def image_to_base64(image_path):
 def classify(image_path=None, image_data=None):
     # Sets up and returns an instance of ChemRecognitionClient for testing.
     client = ChemClassifierClient(server_url=server_url)
-    results = client.classify_image(image_path=image_path, image_data=image_data)
+    results = client.classify_images(image_path=image_path, image_data=image_data)
     print('Classification results: ', results)
     return results
 

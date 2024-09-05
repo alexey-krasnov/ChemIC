@@ -23,6 +23,8 @@ from torchvision import models
 # Get the absolute path of the current file's directory
 CURRENT_DIR = Path(__file__).resolve().parent
 
+API_URL = 'http://127.0.0.1:5010'
+
 class Config:
     # Adjust the path to point to the 'models' directory relative to the current file's directory
     MODELS_DIR = CURRENT_DIR / 'models'
@@ -32,8 +34,6 @@ class Config:
     # IMAGE_CLASSIFIER_MODEL_PATH = MODELS_DIR / "chemical_image_classifier_resnet50_29epochs_hand_drawn_like_2024-02-27T15:56:37.pth"
 
     PROCESSING_UNIT = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    API_URL = 'http://127.0.0.1:5010'
 
     def __init__(self):
         """

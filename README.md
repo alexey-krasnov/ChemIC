@@ -38,7 +38,7 @@ The package consists of three main components:
 
 ### B) Web Service for Chemical Image Classification ([app.py](chemic/app.py))
 - Provides a FastAPI web application for classifying chemical images using the trained ResNet-50 model.
-- Exposes an endpoint `/classify_image` for accepting chemical images and returning the predicted class.
+- Exposes an endpoint `/classify_images` for accepting chemical images and returning the predicted class.
 
 ### C) Image Classification Client ([client.py](chemic/client.py))
 - Interacts with the ChemIC web server. The client can send to the server:
@@ -118,6 +118,7 @@ OR
 * `--export_dir` is the export directory for the results.
 
 ## 4. Alternatively, Use the Client for Classification in Your Python Code
+
 ```python
 from chemic.client import ChemClassifierClient
 
@@ -129,11 +130,11 @@ print(f"Health Status: {health_status}")
 
 # Use image path or directory. Replace with the actual path to your image file
 image_path = '<path to the image file or directory with images for classification>'
-recognition_results = client.classify_image(image_path)
+recognition_results = client.classify_images(image_path)
 
 # OR use base64-encoded image data. Replace with your base64-encoded image data:
 base64_data = b'iVBORw0KGgoAAAANSUhEUgA....'
-recognition_results = client.classify_image(image_data=base64_data)
+recognition_results = client.classify_images(image_data=base64_data)
 
 # Recognition results will be returned in the form of  a list of dictionaries
 print(recognition_results)
@@ -144,12 +145,12 @@ print(recognition_results)
     'classifier_package': 'ChemIC-ml_1.3.1',
     'classifier_model': 'ResNet_50',
   },
- {
-   'image_id': 'image_name_2.png',
+  {
+    'image_id': 'image_name_2.png',
     'predicted_label': 'multiple chemical structures',
-   'classifier_package': 'ChemIC-ml_1.3.1',
-   'classifier_model': 'ResNet_50',
- },
+    'classifier_package': 'ChemIC-ml_1.3.1',
+    'classifier_model': 'ResNet_50',
+  },
   ...
 ]
 ```

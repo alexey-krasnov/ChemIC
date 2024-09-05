@@ -1,83 +1,96 @@
 import streamlit as st
 
-
 def show_docs():
     st.title("ChemIC API Documentation")
 
     st.write("""
     ## Overview
 
-    The ChemIC API provides endpoints for classifying chemical images. This documentation covers the available endpoints, request formats, and example `curl` commands.
+    The ChemIC API provides endpoints for classifying chemical images. This documentation outlines the available endpoints, request formats, and example `curl` commands.
+    
+    ## API Base URL
+
+    **Base URL**: `http://SERVER:PORT`
+    
+    - Replace `SERVER` with the server IP address or domain.
+    - Replace `PORT` with the port on which the API is running.
+    - Example default local setup: `http://127.0.0.1:5010`
 
     ## API Endpoints
 
     ### 1. Classify Image
 
-    **Endpoint**: `/classify_image`  
+    **Endpoint**: `/classify_images`  
     **Method**: `POST`  
-    **Description**: Classifies an image based on either the image path or image data.
+    **Description**: Classifies an image based on either an image file path or image data.
 
     **Request Parameters**:
-    - `image_path` (optional): Path to the image file on the server.
-    - `image_data` (optional): Base64-encoded image data.
+    - `image_path` (optional): Path to the image file located on the server.
+    - `image_data` (optional): Base64-encoded image data for direct submission.
 
-    **Responses**:
-    - Returns a list of classification results in JSON format.
+    **Response**:
+    - A JSON list of classification results.
 
     **Example Request**:
-    
-    **Using image data:**
+
+    **Using base64-encoded image data:**
     ```bash
-    curl -X POST "http://127.0.0.1:5010/classify_image" -F "image_data=<base64_image_data>"
+    curl -X POST "http://127.0.0.1:5010/classify_images" -F "image_data=<base64_image_data>"
     ```
 
-    **Using image path:**
+    **Using image file path on the server:**
     ```bash
-    curl -X POST "http://127.0.0.1:5010/classify_image" -F "image_path=<image_path>"
+    curl -X POST "http://127.0.0.1:5010/classify_images" -F "image_path=<image_path>"
     ```
 
     ### 2. Health Check
 
     **Endpoint**: `/healthcheck`  
     **Method**: `GET`  
-    **Description**: Checks the health status of the API.
+    **Description**: Retrieves the health status of the ChemIC API.
 
-    **Example Request:**
+    **Example Request**:
     ```bash
     curl -X GET "http://127.0.0.1:5010/healthcheck"
     ```
 
     ## Response Format
 
-    **Classify Image**:
-    - Returns a list of objects with the following fields:
-      - `image_id`: The identifier of the image.
-      - `predicted_label`: The label predicted by the classifier.
-      - `classifier_package`: The package used for classification.
-      - `classifier_model`: The model used for classification.
-      ```
-      [
-          {
-            'image_id': 'image_name_1.png',
-            'predicted_label': 'single chemical structure',
-            'classifier_package': 'ChemIC-ml_1.3.1',
-            'classifier_model': 'ResNet_50',
-            },
-          {
-           'image_id': 'image_name_2.png',
-           'predicted_label': 'multiple chemical structures',
-           'classifier_package': 'ChemIC-ml_1.3.1',
-           'classifier_model': 'ResNet_50',
-           },
-          ...
-      ]
-      ```
-    **Health Check**:
+    **Classify Image Response**:
+    The API returns a list of objects in JSON format, each with the following fields:
+    - `image_id`: Identifier for the image.
+    - `predicted_label`: Label predicted by the image classifier.
+    - `classifier_package`: The classification package used.
+    - `classifier_model`: The machine learning model applied for classification.
+
+    Example:
+    ```json
+    [
+        {
+            "image_id": "image_name_1.png",
+            "predicted_label": "single chemical structure",
+            "classifier_package": "ChemIC-ml_1.3.1",
+            "classifier_model": "ResNet_50"
+        },
+        {
+            "image_id": "image_name_2.png",
+            "predicted_label": "multiple chemical structures",
+            "classifier_package": "ChemIC-ml_1.3.1",
+            "classifier_model": "ResNet_50"
+        }
+    ]
+    ```
+
+    **Health Check Response**:
     - Returns a JSON object with a `status` field indicating the server's health.
+    ```json
+    {
+        "status": "Server is up and running"
+    }
+    ```
 
     ## Notes
 
-    - Ensure that your FastAPI server is running before making requests.
-    - For image data, make sure the base64 string is properly encoded.
+    - Ensure that the FastAPI server is running and accessible before making API requests.
+    - For base64-encoded images, verify that the encoding is correct to avoid errors in classification.
     """)
-
