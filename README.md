@@ -5,7 +5,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/ontochem/ChemIC.svg)](https://github.com/ontochem/ChemIC/graphs/contributors)
 [![DOI](https://zenodo.org/badge/DOI/10.1039/D3DD00228D.svg)](https://doi.org/10.1039/D3DD00228D)
 
-
+## This is the official fork and continuation of the ChemIC project, which was originally developed by Dr. Aleksei Krasnov. The original repository can be found at https://github.com/ontochem/ChemIC
 
 ## Table of Contents
 - [Project Description](#project-description)
