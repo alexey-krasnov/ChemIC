@@ -353,15 +353,15 @@ def show_home():
                 )
                 corrected_labels.append(corrected_label)
 
-            # Update DataFrame with corrected labels
+            # Update DataFrame with corrected y
             feedback_df['corrected_label'] = corrected_labels
 
-            # Save feedback to DuckDB if corrected labels are present
+            # Save feedback to DuckDB if corrected y are present
             if (feedback_df['predicted_label'] != feedback_df['corrected_label']).any():
 
                 # FIXME: Implement this part to save to DuckDB, fix encoding to base64 string
                 # save_to_duckdb(feedback_df)
-                st.write("Thanks for your feedback! Your corrected labels have been sent to the developers' team.")
+                st.write("Thanks for your feedback! Your corrected y have been sent to the developers' team.")
 
     if st.sidebar.button("Check API Health"):
         try:
@@ -395,7 +395,7 @@ def main():
         "GitHub",
     ]
 
-    urls = {"GitHub": "https://github.com/ontochem/ChemIC"}
+    urls = {"GitHub": "https://github.com/alexey-krasnov/ChemIC.git"}
 
     styles = {
         "nav": {

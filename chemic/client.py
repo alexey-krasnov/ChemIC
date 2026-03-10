@@ -46,7 +46,7 @@ class ChemClassifierClient:
             image_data (str): The base64 encoded data of the image.
 
         Returns:
-            dict: Classification results, including image ID, predicted labels, and chemical structures.
+            dict: Classification results, including image ID, predicted y, and chemical structures.
         """
         try:
             data = {}

@@ -160,8 +160,7 @@ The [client_image_classifier.ipynb](notebooks/client_image_classifier.ipynb) not
 
 ## Author
 Dr. Aleksei Krasnov
-a.krasnov@digital-science.com
-OntoChem GmbH part of Digital Science
+dr.aleksei.krasnov@gmail.com
 
 ## Citation
 - A. Krasnov, S. Barnabas, T. Böhme, S. Boyer, L. Weber, Comparing software tools for optical chemical structure recognition, Digital Discovery (2024).	https://doi.org/10.1039/D3DD00228D

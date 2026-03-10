@@ -1,2 +1,0 @@
-git+https://github.com/ontochem/ChemIC.git
-duckdb>=1.0.0

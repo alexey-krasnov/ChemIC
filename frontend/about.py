@@ -9,15 +9,8 @@ def show_about():
 
     ### Author
     **Dr. Aleksei Krasnov**  
-    Digital Science GmbH (OntoChem)  
-    Email: [a.krasnov@digital-science.com](mailto:a.krasnov@digital-science.com)
-
-    ### Address
-    Digital Science GmbH (OntoChem)  
-    Blücherstrasse 24  
-    06120 Halle (Saale)  
-    Germany
-
+    Email: [dr.aleksei.krasnov@gmail.com](mailto:dr.aleksei.krasnov@gmail.com)
+     
     ### Citation
     - A. Krasnov, S. Barnabas, T. Böhme, S. Boyer, L. Weber, *Comparing software tools for optical chemical structure recognition*, Digital Discovery (2024). [https://doi.org/10.1039/D3DD00228D](https://doi.org/10.1039/D3DD00228D)
     - L. Weber, A. Krasnov, S. Barnabas, T. Böhme, S. Boyer, *Comparing Optical Chemical Structure Recognition Tools*, ChemRxiv. (2023). [https://doi.org/10.26434/chemrxiv-2023-d6kmg-v2](https://doi.org/10.26434/chemrxiv-2023-d6kmg-v2)

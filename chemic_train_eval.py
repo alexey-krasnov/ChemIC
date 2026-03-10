@@ -180,7 +180,7 @@ def main(args):
         best_model.eval()
         correct_test = 0
         total_test = 0
-        # Create lists to store true labels and predicted labels
+        # Create lists to store true y and predicted y
         predicted_labels = []
         true_labels = []
         with torch.no_grad():
@@ -191,7 +191,7 @@ def main(args):
                 total_test += labels.size(0)
                 correct_test += (predicted == labels).sum().item()
 
-                # Collect predicted and true labels for later calculation of metrics
+                # Collect predicted and true y for later calculation of metrics
                 predicted_labels.extend(predicted.cpu().numpy())
                 true_labels.extend(labels.cpu().numpy())
 
@@ -200,7 +200,7 @@ def main(args):
             print(f"Test Accuracy: {test_accuracy:.4f}")
             print(f"Test Accuracy: {test_accuracy:.4f}", file=log_file)
 
-            # Convert the predicted and true labels to PyTorch tensors
+            # Convert the predicted and true y to PyTorch tensors
             predicted_labels_tensor = torch.tensor(predicted_labels)
             true_labels_tensor = torch.tensor(true_labels)
 

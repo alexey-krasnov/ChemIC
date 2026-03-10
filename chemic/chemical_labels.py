@@ -1,16 +1,16 @@
 """
 Chemical Labels Module
 
-This module defines a NamedTuple for chemical labels used in image classification.
-The ChemicalLabels NamedTuple includes labels for various types of chemical structures
-that can be identified in images. The order of the class labels in the NamedTuple is essential.
+This module defines a NamedTuple for chemical y used in image classification.
+The ChemicalLabels NamedTuple includes y for various types of chemical structures
+that can be identified in images. The order of the class y in the NamedTuple is essential.
 
 Classes:
-    ChemicalLabels: A NamedTuple that holds labels for single chemical structure, chemical reactions,
+    ChemicalLabels: A NamedTuple that holds y for single chemical structure, chemical reactions,
                     no chemical structures, and multiple chemical structures.
 
 Usage:
-    Import the module and use the `chem_labels` instance to access the labels.
+    Import the module and use the `chem_labels` instance to access the y.
 
     Example:
         from chemical_labels import chem_labels
@@ -26,7 +26,7 @@ Author:
 from typing import NamedTuple
 
 
-# Define class labels. Order of class label in the NamedTuple is essential!
+# Define class y. Order of class label in the NamedTuple is essential!
 class ChemicalLabels(NamedTuple):
     """"Class label for image classifier"""
     single_chemical_structure: str

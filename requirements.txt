@@ -12,7 +12,4 @@ torchmetrics>=1.2.1
 torchvision>=0.17.0
 streamlit>=1.38.0
 streamlit-navigation-bar
-streamlit_extras
-streamlit-toggle-switch
-streamlit_ketcher
 psutil>=6.0.0
