@@ -5,7 +5,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/ontochem/ChemIC.svg)](https://github.com/ontochem/ChemIC/graphs/contributors)
 [![DOI](https://zenodo.org/badge/DOI/10.1039/D3DD00228D.svg)](https://doi.org/10.1039/D3DD00228D)
 
-
+### This is the official fork and continuation of the ChemIC project, which was originally developed by Dr. Aleksei Krasnov. The original repository can be found at https://github.com/ontochem/ChemIC
 
 ## Table of Contents
 - [Project Description](#project-description)
@@ -51,7 +51,7 @@ The package consists of three main components:
 ## Prepare Workspace Environment with Conda
 ```bash
 # 1. Create and activate the conda environment
-conda create --name chemic "python<3.12"
+conda create --name chemic "python<3.13"
 conda activate chemic
 
 # 2. Install ChemIC-ml
@@ -59,10 +59,10 @@ conda activate chemic
 pip install ChemIC-ml
 
 # 2.2 Or, install from the GitHub repository
-pip install git+https://github.com/ontochem/ChemIC.git
+pip install git+https://github.com/alexey-krasnov/ChemIC.git
 
 # 2.3 Or, install in editable mode from the GitHub repository
-git clone https://github.com/ontochem/ChemIC.git
+git clone https://github.com/alexey-krasnov/ChemIC.git
 cd ChemIC
 pip install -r requirements.txt
 pip install -e .

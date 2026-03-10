@@ -12,8 +12,8 @@ This will execute the training and evaluation using the specified paths.
 
 Author:
     Dr. Aleksei Krasnov
-    a.krasnov@digital-science.com
-    Date: September 18, 2023
+    dr.aleksei.krasnov@gmail.com
+    Date: 10 March, 2026
 """
 
 import argparse

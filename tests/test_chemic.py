@@ -19,8 +19,8 @@ Note:
 
 Author:
     Dr. Aleksei Krasnov
-    a.krasnov@digital-science.com
-    Date: December 4, 2023
+    dr.aleksei.krasnov@gmail.com
+    Date: 10 March, 2026
 
 """
 
