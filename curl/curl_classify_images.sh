@@ -14,8 +14,7 @@
 # Replace /path/to/image.png with the path to your image file. Adjust the server URL (http://127.0.0.1:5010/classify_images) as needed based on your server configuration.
 
 # Author: Dr. Aleksei Krasnov
-# a.krasnov@digital-science.com
-# OntoChem GmbH part of the Digital Science
+# dr.aleksei.krasnov@gmail.com
 
 
 while [[ $# -gt 0 ]]; do

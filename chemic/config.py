@@ -8,8 +8,8 @@ Dependencies:
 
 Author:
     Dr. Aleksei Krasnov
-    a.krasnov@digital-science.com
-    Date: February 26, 2024
+    dr.aleksei.krasnov@gmail.com
+    Date: 10 March, 2026
 """
 import io
 import zipfile
